@@ -1,0 +1,17 @@
+{
+    "name": "luciene/ecommerce-project-scandiweb",
+    "autoload": {
+        "psr-4": {
+            "Luciene\\EcommerceProjectScandiweb\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Henrique Caeiro",
+            "email": "103581501+henriquecaeiro@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "doctrine/orm": "^2.20"
+    }
+}
