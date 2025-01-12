@@ -25,7 +25,6 @@ logs/
 
 # System or IDE specific configurations
 .env
-.env.*
 .vscode/
 .idea/
 *.iml
