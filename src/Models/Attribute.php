@@ -18,23 +18,18 @@ class Attribute extends BaseModel
     /** @var string Type of the attribute. */
     private string $type;
 
-    /** @var string Product ID associated with the attribute. */
-    private string $productId;
-
     /**
      * Attribute constructor.
      *
      * @param PDO $db Database connection instance.
      * @param string $name Name of the attribute.
      * @param string $type Type of the attribute.
-     * @param string $productId Product ID associated with the attribute.
      */
-    public function __construct(PDO $db, string $name, string $type, string $productId)
+    public function __construct(PDO $db, string $name, string $type)
     {
         parent::__construct($db);
         $this->name = $name;
         $this->type = $type;
-        $this->productId = $productId;
     }
 
     /**
@@ -47,9 +42,8 @@ class Attribute extends BaseModel
     {
         try {
             $stmt = $this->db->prepare(
-                'INSERT INTO attributes (product_id, name, type) VALUES (:product_id, :name, :type)'
+                'INSERT IGNORE INTO attributes ( name, type) VALUES (:name, :type)'
             );
-            $stmt->bindParam(':product_id', $this->productId);
             $stmt->bindParam(':name', $this->name);
             $stmt->bindParam(':type', $this->type);
             $stmt->execute();

@@ -16,12 +16,8 @@ class CategoryController extends BaseController
      */
     public function save(array $data): int
     {
-        try {
-            $category = new Category($this->db, $data['name']);
-            return $category->save();
-        } catch (Exception $e) {
-            echo "Error saving category '{$data['name']}': " . $e->getMessage();
-        }
+        $category = new Category($this->db, $data['name']);
+        return $category->save();
     }
 
     /**
@@ -35,11 +31,7 @@ class CategoryController extends BaseController
         $categoryIds = [];
 
         foreach ($catgoriesData as $categoryData) {
-            try {
-                $categoryIds[$categoryData['name']] = $this->save($categoryData);
-            } catch (Exception $e) {
-                echo "Error sending category ID'{$categoryIds[$categoryData['name']]}': " . $e->getMessage();
-            }
+            $categoryIds[$categoryData['name']] = $this->save($categoryData);
         }
 
         return $categoryIds;

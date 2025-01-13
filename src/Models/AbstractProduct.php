@@ -10,28 +10,28 @@ use PDOException;
  *
  * Represents a product in the system.
  */
-class Product extends BaseModel
+abstract class AbstractProduct extends BaseModel
 {
     /** @var string Product ID. */
-    private string $id;
+    protected string $id;
 
     /** @var string Product name. */
-    private string $name;
+    protected string $name;
 
     /** @var string Product description. */
-    private string $description;
+    protected string $description;
 
     /** @var int Whether the product is in stock. */
-    private int $inStock;
+    protected int $inStock;
 
     /** @var string Product brand. */
-    private string $brand;
+    protected string $brand;
 
     /** @var int Category ID associated with the product. */
-    private int $categoryId;
+    protected int $categoryId;
 
     /**
-     * Product constructor.
+     * AbstractProduct  constructor.
      *
      * @param PDO $db Database connection instance.
      * @param string $id Product id.
@@ -52,24 +52,33 @@ class Product extends BaseModel
         $this->categoryId = $categoryId;
     }
 
-    /**
-     * Save the product to the database.
-     *
-     * @return string The ID of the saved product.
-     * @throws PDOException If an error occurs during the save operation.
-     */
     public function save(): string
     {
-        $stmt = $this->db->prepare('
-        INSERT INTO products (id, name, description, in_stock, category_id, brand) VALUES (:id, :name, :description, :in_stock, :category_id, :brand)
-        ');
-        $stmt->bindParam(':id', $this->id);
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':in_stock', $this->inStock);
-        $stmt->bindParam(':category_id', $this->categoryId);
-        $stmt->bindParam(':brand', $this->brand);
-        $stmt->execute();
-        return (string) $this->id;
+        try {
+            $stmt = $this->db->prepare('
+                INSERT INTO products 
+                    (id, name, description, in_stock, category_id, brand) 
+                VALUES 
+                    (:id, :name, :description, :in_stock, :category_id, :brand)
+            ');
+            $stmt->bindParam(':id', $this->id);
+            $stmt->bindParam(':name', $this->name);
+            $stmt->bindParam(':description', $this->description);
+            $stmt->bindParam(':in_stock', $this->inStock);
+            $stmt->bindParam(':brand', $this->brand);
+            $stmt->bindParam(':category_id', $this->categoryId);
+            $stmt->execute();
+
+            return $this->id;
+        } catch (PDOException $e) {
+            throw new PDOException("Error saving Product: " . $e->getMessage());
+        }
+    }
+
+    abstract public function getProductType(): string;
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 }

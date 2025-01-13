@@ -44,7 +44,11 @@ class Category extends BaseModel
 
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
-            throw new PDOException("Error saving category: " . $e->getMessage());
+            if($e->errorInfo[1] == 1062){
+                throw new \Exception("The database was already imported");
+            }else{
+                throw new PDOException("Error saving category: " . $e->getMessage());
+            }
         }
     }
 }

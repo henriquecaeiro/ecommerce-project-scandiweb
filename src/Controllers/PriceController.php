@@ -16,7 +16,7 @@ class PriceController extends BaseController
     public function save(array $data): int
     {
         try {
-            $price = new Price($this->db, $data['currency'], $data['amount'], $data['product_id']);
+            $price = new Price($this->db, $data['currencyLabel'], $data['currencySymbol'], $data['amount'], $data['productId']);
             return $price->save();
         } catch (Exception $e) {
             echo "Error saving price for product ID {$data['product_id']}: " . $e->getMessage();

@@ -2,11 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\Product;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
-use App\Models\Price;
-use App\Models\ProductImage;
+use App\Factories\ProductFactory;
 use Exception;
 
 class ProductController extends BaseController
@@ -17,10 +13,11 @@ class ProductController extends BaseController
      * @param array $data Data containing products and category mappings.
      * @return mixed
      */
-    public function save(array $data): mixed
+    public function save(array $data): array
     {
         $productsData = $data['productsData'] ?? [];
         $categoryIds = $data['categoryIds'] ?? [];
+        $productIds = [];
 
         foreach ($productsData as $productData) {
             try {
@@ -30,47 +27,25 @@ class ProductController extends BaseController
                     throw new Exception("Category not found for product '{$productData['name']}'");
                 }
 
-                $inStock = $productData['inStock'] ? 1 : 0;
-                $product = new Product(
+                $product = ProductFactory::createProduct(
                     $this->db,
-                    $productData['id'],
-                    $productData['name'],
-                    $productData['description'],
-                    $inStock,
-                    $productData['brand'],
-                    $categoryId
+                    $productData,
+                    $categoryId,
+                    $productData['category']
                 );
-                $productId = $product->save();
 
-                $this->handleAttributes($productId, $productData['attributes'] ?? []);
+                $productId = $product->save();
+                $productIds[$productData['id']] = $productId;
+
+                //$this->handleAttributes($productId, $productData['attributes'] ?? []);
                 $this->handlePrices($productId, $productData['prices'] ?? []);
                 $this->handleImages($productId, $productData['gallery'] ?? []);
             } catch (Exception $e) {
-                echo "Error saving product '{$productData['name']}': " . $e->getMessage();
+                echo "Error saving product '{$productData['name']}': " . $e->getMessage() . "<br>";
             }
         }
 
-        return null;
-    }
-
-    /**
-     * Handle product attributes.
-     *
-     * @param string $productId ID of the product.
-     * @param array $attributesData Attributes data to process.
-     * @return void
-     */
-    private function handleAttributes(string $productId, array $attributesData): void
-    {
-        foreach ($attributesData as $attributeData) {
-            $attributeModel = new Attribute($this->db, $attributeData['name'], $attributeData['type'], $productId);
-            $attributeId = $attributeModel->save();
-
-            foreach ($attributeData['items'] as $attributeValueData) {
-                $attributeValueModel = new AttributeValue($this->db, $attributeValueData['value'], $attributeValueData['displayValue'], $attributeId);
-                $attributeValueModel->save();
-            }
-        }
+        return $productIds;
     }
 
     /**
@@ -83,9 +58,15 @@ class ProductController extends BaseController
     private function handlePrices(string $productId, array $pricesData): void
     {
         foreach ($pricesData as $priceData) {
-            $priceModel = new Price($this->db, $priceData['currency']['symbol'], $priceData['amount'], $productId);
+            $priceModel = new PriceController($this->db);
             if (isset($priceData['currency']['symbol'], $priceData['amount'])) {
-                $priceModel->save();
+                $data = [
+                    'currencyLabel' =>  $priceData['currency']['label'],
+                    'currencySymbol' => $priceData['currency']['symbol'],
+                    'amount' => $priceData['amount'],
+                    'productId' => $productId
+                ];
+                $priceModel->save($data);
             } else {
                 throw new Exception("Missing currency symbol or amount for product ID $productId");
             }
@@ -102,8 +83,12 @@ class ProductController extends BaseController
     private function handleImages(string $productId, array $imagesData): void
     {
         foreach ($imagesData as $imageUrl) {
-            $imageModel = new ProductImage($this->db, $imageUrl, $productId);
-            $imageModel->save();
+            $data = [
+                'url' => $imageUrl,
+                'productId' => $productId
+            ];
+            $imageModel = new ProductImageController($this->db);
+            $imageModel->save($data);
         }
     }
 }

@@ -5,12 +5,7 @@ namespace App\Models;
 use PDO;
 use PDOException;
 
-/**
- * Class AttributeValue
- *
- * Represents a value for a specific attribute in the system.
- */
-class AttributeValue extends BaseModel
+abstract class AbstractAttributeValue extends BaseModel
 {
     /** @var string Value of the attribute. */
     private string $value;
@@ -21,6 +16,9 @@ class AttributeValue extends BaseModel
     /** @var int Attribute ID associated with the value. */
     private int $attributeId;
 
+    /** @var string Product ID associated with the value. */
+    private string $productId;
+
     /**
      * AttributeValue constructor.
      *
@@ -28,13 +26,15 @@ class AttributeValue extends BaseModel
      * @param string $value Value of the attribute.
      * @param string $displayValue Display value of the attribute.
      * @param int $attributeId Attribute ID associated with the value.
+     * @param string $productId Product ID associated with the value.
      */
-    public function __construct(PDO $db, string $value, string $displayValue, int $attributeId)
+    public function __construct(PDO $db, string $value, string $displayValue, int $attributeId, string $productId)
     {
         parent::__construct($db);
         $this->value = $value;
         $this->displayValue = $displayValue;
         $this->attributeId = $attributeId;
+        $this->productId = $productId;
     }
 
     /**
@@ -47,9 +47,10 @@ class AttributeValue extends BaseModel
     {
         try {
             $stmt = $this->db->prepare(
-                'INSERT INTO attribute_values (attribute_id, value, display_value) VALUES (:attribute_id, :value, :display_value)'
+                'INSERT INTO attribute_values (attribute_id, product_id, value, display_value) VALUES (:attribute_id, :product_id, :value, :display_value)'
             );
             $stmt->bindParam(':attribute_id', $this->attributeId);
+            $stmt->bindParam(':product_id', $this->productId);
             $stmt->bindParam(':value', $this->value);
             $stmt->bindParam(':display_value', $this->displayValue);
             $stmt->execute();
@@ -59,4 +60,6 @@ class AttributeValue extends BaseModel
             throw new PDOException("Error saving attribute value: " . $e->getMessage());
         }
     }
+
+    abstract public function getAttributeValue(): string;
 }

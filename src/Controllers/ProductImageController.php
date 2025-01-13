@@ -16,10 +16,10 @@ class ProductImageController extends BaseController
     public function save(array $data): int
     {
         try {
-            $image = new ProductImage($this->db, $data['url'], $data['product_id']);
+            $image = new ProductImage($this->db, $data['url'], $data['productId']);
             return $image->save();
         } catch (Exception $e) {
-            echo "Error saving image for product ID {$data['product_id']}: " . $e->getMessage();
+            echo "Error saving image for product ID {$data['productId']}: " . $e->getMessage();
         }
     }
 }
