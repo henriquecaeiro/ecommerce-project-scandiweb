@@ -2,65 +2,53 @@
 
 namespace App\Controller;
 
-use GraphQL\GraphQL as GraphQLBase;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
-use GraphQL\Type\Schema;
-use GraphQL\Type\SchemaConfig;
+// Importamos APENAS as classes que precisamos
+use App\GraphQL\Schema\RootSchema;          // <-- O schema raiz que unifica Query e Mutation
+use GraphQL\GraphQL as WebonyxGraphQL;      // <-- Biblioteca webonyx
 use RuntimeException;
 use Throwable;
 
-class GraphQL {
-    static public function handle() {
+class GraphQL
+{
+    /**
+     * Handle the incoming GraphQL request.
+     *
+     * @return string JSON-encoded output.
+     */
+    public static function handle(): string
+    {
         try {
-            $queryType = new ObjectType([
-                'name' => 'Query',
-                'fields' => [
-                    'echo' => [
-                        'type' => Type::string(),
-                        'args' => [
-                            'message' => ['type' => Type::string()],
-                        ],
-                        'resolve' => static fn ($rootValue, array $args): string => $rootValue['prefix'] . $args['message'],
-                    ],
-                ],
-            ]);
-        
-            $mutationType = new ObjectType([
-                'name' => 'Mutation',
-                'fields' => [
-                    'sum' => [
-                        'type' => Type::int(),
-                        'args' => [
-                            'x' => ['type' => Type::int()],
-                            'y' => ['type' => Type::int()],
-                        ],
-                        'resolve' => static fn ($calc, array $args): int => $args['x'] + $args['y'],
-                    ],
-                ],
-            ]);
-        
-            // See docs on schema options:
-            // https://webonyx.github.io/graphql-php/schema-definition/#configuration-options
-            $schema = new Schema(
-                (new SchemaConfig())
-                ->setQuery($queryType)
-                ->setMutation($mutationType)
-            );
-        
+            // 1) Construímos o Schema (Query e Mutation)
+            $schema = RootSchema::build();
+
+            // 2) Lemos o corpo da requisição
             $rawInput = file_get_contents('php://input');
             if ($rawInput === false) {
                 throw new RuntimeException('Failed to get php://input');
             }
-        
+            
             $input = json_decode($rawInput, true);
-            $query = $input['query'];
+            // Se não vier query, podemos definir como string vazia:
+            $query = $input['query'] ?? '';
+            // Se houver variables, extraímos:
             $variableValues = $input['variables'] ?? null;
-        
-            $rootValue = ['prefix' => 'You said: '];
-            $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
+
+            // 3) Podemos definir um $rootValue (opcional)
+            $rootValue = [ 'exampleKey' => 'exampleValue' ];
+
+            // 4) Executamos a query/mutation
+            $result = WebonyxGraphQL::executeQuery(
+                $schema,
+                $query,
+                $rootValue,
+                /* context */ null,
+                $variableValues
+            );
+
+            // 5) Convertendo o resultado para array e, depois, JSON
             $output = $result->toArray();
         } catch (Throwable $e) {
+            // Em caso de erro, retorna um objeto de erro
             $output = [
                 'error' => [
                     'message' => $e->getMessage(),
@@ -68,6 +56,7 @@ class GraphQL {
             ];
         }
 
+        // 6) Retornamos como JSON
         header('Content-Type: application/json; charset=UTF-8');
         return json_encode($output);
     }
