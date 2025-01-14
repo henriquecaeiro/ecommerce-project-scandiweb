@@ -2,11 +2,26 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Config\Database;
+$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
+    $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
+});
 
-try {
-    $connection = (new Database($_ENV['DB_HOST'], $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']))->connect();
-    echo "Conexão bem-sucedida ao banco de dados!";
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+$routeInfo = $dispatcher->dispatch(
+    $_SERVER['REQUEST_METHOD'],
+    $_SERVER['REQUEST_URI']
+);
+
+switch ($routeInfo[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
+        // ... 404 Not Found
+        break;
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        $allowedMethods = $routeInfo[1];
+        // ... 405 Method Not Allowed
+        break;
+    case FastRoute\Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
+        echo $handler($vars);
+        break;
 }
