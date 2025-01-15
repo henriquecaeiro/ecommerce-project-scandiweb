@@ -32,5 +32,7 @@ class QueryType extends ObjectType
                 // ... e assim por diante
             ],
         ];
+
+        parent::__construct($config);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Schema;
 
-use GraphQL\Type\Definition\Schema;
+use GraphQL\Type\Schema;
 use App\GraphQL\Schema\Types\QueryType;
 use App\GraphQL\Schema\Types\MutationType;
 

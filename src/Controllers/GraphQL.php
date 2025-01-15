@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controllers;
 
 // Importamos APENAS as classes que precisamos
 use App\GraphQL\Schema\RootSchema;          // <-- O schema raiz que unifica Query e Mutation

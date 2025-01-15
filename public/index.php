@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
+    $r->post('/graphql', [App\Controllers\GraphQL::class, 'handle']);
 });
 
 $routeInfo = $dispatcher->dispatch(
