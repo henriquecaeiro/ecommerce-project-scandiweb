@@ -2,62 +2,56 @@
 
 namespace App\Controllers;
 
-// Importamos APENAS as classes que precisamos
-use App\GraphQL\Schema\RootSchema;          // <-- O schema raiz que unifica Query e Mutation
-use GraphQL\GraphQL as WebonyxGraphQL;      // <-- Biblioteca webonyx
-use RuntimeException;
+use GraphQL\Type\Schema;
+use GraphQL\GraphQL as WebonyxGraphQL;
+use GraphQL\Error\DebugFlag as Debug;
 use Throwable;
 
+/**
+ * Handles GraphQL query execution.
+ */
 class GraphQL
 {
+    private Schema $schema;
+
+    public function __construct(Schema $schema)
+    {
+        $this->schema = $schema;
+    }
+
     /**
-     * Handle the incoming GraphQL request.
+     * Executes a GraphQL query.
      *
-     * @return string JSON-encoded output.
+     * @param string $query The query string.
+     * @param array|null $variables Variables for the query.
+     * @return array The query result.
      */
-    public static function handle(): string
+    public function execute(string $query, ?array $variables): array
     {
         try {
-            // 1) Construímos o Schema (Query e Mutation)
-            $schema = RootSchema::build();
-
-            // 2) Lemos o corpo da requisição
-            $rawInput = file_get_contents('php://input');
-            if ($rawInput === false) {
-                throw new RuntimeException('Failed to get php://input');
-            }
-            
-            $input = json_decode($rawInput, true);
-            // Se não vier query, podemos definir como string vazia:
-            $query = $input['query'] ?? '';
-            // Se houver variables, extraímos:
-            $variableValues = $input['variables'] ?? null;
-
-            // 3) Podemos definir um $rootValue (opcional)
-            $rootValue = [ 'exampleKey' => 'exampleValue' ];
-
-            // 4) Executamos a query/mutation
+            // Execute the GraphQL query against the schema
             $result = WebonyxGraphQL::executeQuery(
-                $schema,
+                $this->schema,
                 $query,
-                $rootValue,
-                /* context */ null,
-                $variableValues
+                null,
+                null,
+                $variables
             );
 
-            // 5) Convertendo o resultado para array e, depois, JSON
-            $output = $result->toArray();
+            // Convert the result to an array, including debug information
+            return $result->toArray(Debug::RETHROW_INTERNAL_EXCEPTIONS | Debug::INCLUDE_DEBUG_MESSAGE);
         } catch (Throwable $e) {
-            // Em caso de erro, retorna um objeto de erro
-            $output = [
-                'error' => [
-                    'message' => $e->getMessage(),
+            // Log the error details for debugging purposes
+            error_log("GraphQL Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
+
+            // Return a generic error response to the client
+            return [
+                'errors' => [
+                    [
+                        'message' => $e->getMessage(),
+                    ],
                 ],
             ];
         }
-
-        // 6) Retornamos como JSON
-        header('Content-Type: application/json; charset=UTF-8');
-        return json_encode($output);
     }
 }

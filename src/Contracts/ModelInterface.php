@@ -11,8 +11,9 @@ interface ModelInterface
 {
     /**
      * Save the entity to the database.
-     *
-     * @return mixed The result of the save operation (e.g., ID of the saved record).
+     * 
+     * @param array $data The data to be saved.
+     * @return mixed The result of the save operation.
      */
-    public function save(): mixed;
+    public function save(array $data): mixed;
 }

@@ -12,55 +12,49 @@ use PDOException;
  */
 class Price extends BaseModel
 {
-    /** @var string Currency symbol of the price. */
-    private string $currencyLabel;
-
-    /** @var string Currency l of the price. */
-        private string $currencySymbol;
-
-    /** @var float Amount of the price. */
-    private float $amount;
-
-    /** @var string Product ID associated with the price. */
-    private string $productId;
+    /** @var PDO Database connection instance. */
+    public PDO $db;
 
     /**
      * Price constructor.
      *
      * @param PDO $db Database connection instance.
-     * @param string $currency Currency symbol of the price.
-     * @param float $amount Amount of the price.
-     * @param string $productId Product ID associated with the price.
      */
-    public function __construct(PDO $db, string $currencyLabel, string $currencySymbol, float $amount, string $productId)
+    public function __construct(PDO $db)
     {
         parent::__construct($db);
-        $this->currencyLabel = $currencyLabel;
-        $this->currencySymbol = $currencySymbol;
-        $this->amount = $amount;
-        $this->productId = $productId;
     }
 
     /**
      * Save the price to the database.
      *
-     * @return int The ID of the saved price.
+     * @param array $data Associative array containing price details:
+     *
+     * @return int The ID of the saved price record.
      * @throws PDOException If an error occurs during the save operation.
      */
-    public function save(): int
+    public function save($data): int
     {
+        // Prepare the SQL statement for inserting price data into the database
         try {
             $stmt = $this->db->prepare(
-                'INSERT INTO prices (product_id, amount, currency_label, currency_symbol) VALUES (:product_id, :amount, :currency_label, :currency_symbol)'
+                'INSERT INTO prices (product_id, amount, currency_label, currency_symbol) 
+                VALUES (:product_id, :amount, :currency_label, :currency_symbol)'
             );
-            $stmt->bindParam(':product_id', $this->productId);
-            $stmt->bindParam(':currency_label', $this->currencyLabel);
-            $stmt->bindParam(':currency_symbol', $this->currencySymbol);
-            $stmt->bindParam(':amount', $this->amount);
+
+            // Bind the data parameters to the prepared statement
+            $stmt->bindParam(':product_id', $data['productId']);
+            $stmt->bindParam(':currency_label',  $data['currencyLabel']);
+            $stmt->bindParam(':currency_symbol', $data['currencySymbol']);
+            $stmt->bindParam(':amount', $data['amount']);
+
+            // Execute the statement
             $stmt->execute();
 
+            // Return the ID of the last inserted record
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
+            // Throw a descriptive exception if the operation fails
             throw new PDOException("Error saving price: " . $e->getMessage());
         }
     }

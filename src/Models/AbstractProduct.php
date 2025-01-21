@@ -6,79 +6,64 @@ use PDO;
 use PDOException;
 
 /**
- * Class Product
+ * Abstract class AbstractProduct
  *
- * Represents a product in the system.
+ * Serves as a base class for product models in the system.
+ * Provides common functionality for saving product data.
  */
-abstract class AbstractProduct extends BaseModel
+abstract class AbstractProduct extends QueryableModel
 {
-    /** @var string Product ID. */
-    protected string $id;
-
-    /** @var string Product name. */
-    protected string $name;
-
-    /** @var string Product description. */
-    protected string $description;
-
-    /** @var int Whether the product is in stock. */
-    protected int $inStock;
-
-    /** @var string Product brand. */
-    protected string $brand;
-
-    /** @var int Category ID associated with the product. */
-    protected int $categoryId;
+    /** @var PDO Database connection instance. */
+    public PDO $db;
 
     /**
-     * AbstractProduct  constructor.
+     * AbstractProduct constructor.
      *
-     * @param PDO $db Database connection instance.
-     * @param string $id Product id.
-     * @param string $name Product name.
-     * @param string $description Product description.
-     * @param int $inStock Whether the product is in stock.
-     * @param string $brand Product brand.
-     * @param int $categoryId Category ID associated with the product.
+     * Initializes the database connection for the product model.
+     *
+     * @param PDO $dbConnection Database connection instance.
      */
-    public function __construct(PDO $dbConnection, string $id, string $name, string $description, int $inStock, string $brand, int $categoryId)
+    public function __construct(PDO $dbConnection)
     {
         parent::__construct($dbConnection);
-        $this->id = $id;
-        $this->name = $name;
-        $this->description = $description;
-        $this->inStock = $inStock;
-        $this->brand = $brand;
-        $this->categoryId = $categoryId;
     }
 
-    public function save(): string
+        /**
+     * Saves product data to the database.
+     *
+     * Inserts product details into the `products` table.
+     *
+     * @param array $data Product data array.
+     * @return string The product ID of the saved product.
+     * @throws PDOException If an error occurs while saving the product.
+     */
+    public function save($data): string
     {
         try {
+            // Prepare the SQL statement for inserting product data
             $stmt = $this->db->prepare('
                 INSERT INTO products 
                     (id, name, description, in_stock, category_id, brand) 
                 VALUES 
                     (:id, :name, :description, :in_stock, :category_id, :brand)
             ');
-            $stmt->bindParam(':id', $this->id);
-            $stmt->bindParam(':name', $this->name);
-            $stmt->bindParam(':description', $this->description);
-            $stmt->bindParam(':in_stock', $this->inStock);
-            $stmt->bindParam(':brand', $this->brand);
-            $stmt->bindParam(':category_id', $this->categoryId);
+
+            // Bind the parameters to the statement
+            $stmt->bindParam(':id', $data['productId']);
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':description', $data['description']);
+            $stmt->bindParam(':in_stock', $data['inStock']);
+            $stmt->bindParam(':brand', $data['brand']);
+            $stmt->bindParam(':category_id', $data['categoryId']);
+
+            // Execute the statement
             $stmt->execute();
 
-            return $this->id;
+            // Return the ID of the saved product
+            return $data['productId'];
         } catch (PDOException $e) {
+             // Throw a detailed exception if the save operation fails
             throw new PDOException("Error saving Product: " . $e->getMessage());
         }
-    }
-
-    abstract public function getProductType(): string;
-
-    public function getId(): string
-    {
-        return $this->id;
     }
 }

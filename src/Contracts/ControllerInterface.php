@@ -13,7 +13,7 @@ interface ControllerInterface
      * Save data to the database.
      *
      * @param array $data The data to be saved.
-     * @return mixed
+     * @return mixed The result of the save operation.
      */
     public function save(array $data): mixed;
 }

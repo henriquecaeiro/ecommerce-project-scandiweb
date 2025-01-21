@@ -5,61 +5,69 @@ namespace App\Models;
 use PDO;
 use PDOException;
 
+/**
+ * Abstract class AbstractAttributeValue
+ *
+ * Represents a base model for attribute values. Provides shared functionality for saving and retrieving attribute values.
+ */
 abstract class AbstractAttributeValue extends BaseModel
 {
-    /** @var string Value of the attribute. */
-    private string $value;
-
-    /** @var string Display value of the attribute. */
-    private string $displayValue;
-
-    /** @var int Attribute ID associated with the value. */
-    private int $attributeId;
-
-    /** @var string Product ID associated with the value. */
-    private string $productId;
+    /** @var PDO Database connection instance. */
+    public PDO $db;
 
     /**
-     * AttributeValue constructor.
+     * AbstractAttributeValue constructor.
+     *
+     * Initializes the database connection for the attribute value model.
      *
      * @param PDO $db Database connection instance.
-     * @param string $value Value of the attribute.
-     * @param string $displayValue Display value of the attribute.
-     * @param int $attributeId Attribute ID associated with the value.
-     * @param string $productId Product ID associated with the value.
      */
-    public function __construct(PDO $db, string $value, string $displayValue, int $attributeId, string $productId)
+    public function __construct(PDO $db)
     {
         parent::__construct($db);
-        $this->value = $value;
-        $this->displayValue = $displayValue;
-        $this->attributeId = $attributeId;
-        $this->productId = $productId;
     }
 
     /**
      * Save the attribute value to the database.
      *
+     * Saves the attribute value along with its associated product and attribute IDs.
+     *
+     * @param array $data Data containing attribute details.
      * @return int The ID of the saved attribute value.
-     * @throws PDOException If an error occurs during the save operation.
+     * @throws PDOException If an error occurs during the database operation.
      */
-    public function save(): int
+    public function save($data): int
     {
         try {
+            // Prepare the SQL statement for inserting attribute values
             $stmt = $this->db->prepare(
                 'INSERT INTO attribute_values (attribute_id, product_id, value, display_value) VALUES (:attribute_id, :product_id, :value, :display_value)'
             );
-            $stmt->bindParam(':attribute_id', $this->attributeId);
-            $stmt->bindParam(':product_id', $this->productId);
-            $stmt->bindParam(':value', $this->value);
-            $stmt->bindParam(':display_value', $this->displayValue);
+
+            // Bind parameters to the prepared statement
+            $stmt->bindParam(':attribute_id', $data['attributeId']);
+            $stmt->bindParam(':product_id', $data['productId']);
+            $stmt->bindParam(':value', $data['value']);
+            $stmt->bindParam(':display_value', $data['displayValue']);
+
+            // Execute the statement
             $stmt->execute();
 
+            // Return the ID of the newly inserted row
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
+            // Throw a more descriptive exception if the operation fails
             throw new PDOException("Error saving attribute value: " . $e->getMessage());
         }
     }
 
-    abstract public function getAttributeValue(): string;
+    /**
+     * Abstract method to retrieve attribute values for a product.
+     *
+     * Must be implemented by concrete subclasses to fetch specific attribute values.
+     *
+     * @param mixed $productId The ID of the product for which attributes are being retrieved.
+     * @return array An array of attribute values for the specified product.
+     */
+    abstract public function get($productId): array;
 }

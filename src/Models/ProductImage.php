@@ -12,11 +12,8 @@ use PDOException;
  */
 class ProductImage extends BaseModel
 {
-    /** @var string URL of the product image. */
-    private string $url;
-
-    /** @var string Product ID associated with the image. */
-    private string $productId;
+    /** @var PDO Database connection instance. */
+    public PDO $db;
 
     /**
      * ProductImage constructor.
@@ -25,31 +22,38 @@ class ProductImage extends BaseModel
      * @param string $url URL of the product image.
      * @param string $productId Product ID associated with the image.
      */
-    public function __construct(PDO $db, string $url, string $productId)
+    public function __construct(PDO $db)
     {
         parent::__construct($db);
-        $this->url = $url;
-        $this->productId = $productId;
     }
 
     /**
      * Save the product image to the database.
      *
-     * @return int The ID of the saved product image.
+     * @param array $data Associative array containing the image data:
+     *
+     * @return int The ID of the saved product image record.
      * @throws PDOException If an error occurs during the save operation.
      */
-    public function save(): int
+    public function save($data): int
     {
+        // Prepare the SQL statement to insert image data into the database
         try {
             $stmt = $this->db->prepare(
                 'INSERT INTO product_images (product_id, url) VALUES (:product_id, :url)'
             );
-            $stmt->bindParam(':product_id', $this->productId);
-            $stmt->bindParam(':url', $this->url);
-            $stmt->execute();
 
+            // Bind the image data parameters to the prepared statement
+            $stmt->bindParam(':product_id', $data['productId']);
+            $stmt->bindParam(':url', $data['url']);
+            
+            // Execute the statement
+            $stmt->execute();
+            
+            // Return the ID of the last inserted record
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
+            // Throw a descriptive exception if the operation fails
             throw new PDOException("Error saving product image: " . $e->getMessage());
         }
     }

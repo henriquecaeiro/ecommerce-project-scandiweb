@@ -5,20 +5,33 @@ namespace App\Controllers;
 use App\Models\Price;
 use Exception;
 
+/**
+ * Class PriceController
+ *
+ * Handles operations related to managing price data, such as saving price details into the database.
+ */
 class PriceController extends BaseController
 {
     /**
-     * Save prices data to the database.
+     * Save price data to the database.
      *
-     * @param array $data Data containing prices and their details.
-     * @return int
+     * This method instantiates a `Price` model and saves the provided price details.
+     * If an error occurs during the save operation, it is caught and logged.
+     *
+     * @param array $data An associative array containing the price details:
+     * @return int The ID of the saved price record.
+     * @throws Exception If the save operation fails and is not handled internally.
      */
     public function save(array $data): int
     {
         try {
-            $price = new Price($this->db, $data['currencyLabel'], $data['currencySymbol'], $data['amount'], $data['productId']);
-            return $price->save();
+            // Create a new Price model instance with the provided data
+            $price = new Price($this->db);
+
+            // Save the price data to the database and return the ID
+            return $price->save($data);
         } catch (Exception $e) {
+            // Log the error and include product ID in the message for better traceability
             echo "Error saving price for product ID {$data['product_id']}: " . $e->getMessage();
         }
     }

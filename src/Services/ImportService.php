@@ -15,44 +15,50 @@ use Exception;
  */
 class ImportService
 {
-    /** @var PDO */
-    private PDO $dbConnection;
+    /** @var PDO Database connection instance. */
+    public PDO $dbConnection;
 
-    /** @var CategoryController */
+    /** @var CategoryController Handles operations related to categories. */
     private CategoryController $categoryController;
 
-    /** @var ProductController */
+    /** @var ProductController Handles operations related to products. */
     private ProductController $productController;
 
-    /** @var AttributeController */
+    /** @var AttributeController Handles operations related to attributes. */
     private AttributeController $attributeController;
 
     /**
      * ImportService constructor.
      *
-     * @param PDO $dbConnection Conexão com o banco de dados.
+     * Initializes the service with the database connection and controllers.
+     *
+     * @param PDO $dbConnection The database connection.
      */
     public function __construct(PDO $dbConnection)
     {
-        $this->dbConnection          = $dbConnection;
-        $this->categoryController    = new CategoryController($dbConnection);
-        $this->productController     = new ProductController($dbConnection);
-        $this->attributeController   = new AttributeController($dbConnection);
+        $this->dbConnection = $dbConnection;
+        $this->categoryController = new CategoryController($dbConnection);
+        $this->productController = new ProductController($dbConnection);
+        $this->attributeController = new AttributeController($dbConnection);
     }
 
     /**
      * Imports data into the system from a JSON file.
      *
-     * @param string $filePath Path of the file that will be used.
+     * The method handles importing categories, products, and their respective attributes and values.
+     *
+     * @param string $filePath Path to the JSON file containing import data.
      * @return void
-     * @throws Exception If an error occurs during import.
+     * @throws Exception If the file is not found or JSON decoding fails.
      */
     public function importFromJson(string $filePath): void
     {
+        // Check if the file exists
         if (!file_exists($filePath)) {
             throw new Exception("File not found: {$filePath}");
         }
 
+        // Decode the JSON data
         $jsonData = file_get_contents($filePath);
         $dataArray = json_decode($jsonData, true);
 
@@ -61,33 +67,33 @@ class ImportService
         }
 
         try {
-            // 1) Importar categorias
+            // Step 1: Import categories and retrieve their IDs
             $categoryIds = $this->categoryController->importCategories($dataArray['data']['categories']);
 
-            // 2) Preparar e importar produtos
-            $data = [
+            // Step 2: Prepare and import products
+            $productData = [
                 'productsData' => $dataArray['data']['products'],
                 'categoryIds'  => $categoryIds,
             ];
-            $productIds = $this->productController->save($data);
+            $productIds = $this->productController->save($productData);
 
-            // 3) Preparar e importar atributos (e valores de atributo, caso sua lógica inclua)
-            $data = [
+            // Step 3: Prepare and import attributes and their values
+            $attributeData = [
                 'productsData' => $dataArray['data']['products'],
                 'productsIds'  => $productIds,
             ];
-            // Chama o método que cria os atributos (e seus values) em duas etapas.
-            $this->attributeController->save($data);
+            $this->attributeController->save($attributeData);
 
-            echo "Importação concluída com sucesso!";
+            // Import completed successfully
+            echo "Import completed successfully!";
         } catch (\Exception $e) {
-            // Se for duplicidade (1062), paramos a execução
+            // Handle duplicate entry errors (1062) or specific exceptions
             if ($e->getCode() === 1062 || $e->getMessage() === "The database was already imported") {
                 echo $e->getMessage();
-                exit; // interrompe completamente
+                exit;
             }
-        
-            // Outros erros genéricos
+
+            // Handle generic errors
             echo "Error during import: " . $e->getMessage();
         }
     }

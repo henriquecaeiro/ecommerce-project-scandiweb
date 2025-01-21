@@ -2,16 +2,38 @@
 
 namespace App\Controllers;
 
+use PDO;
 use App\Factories\ProductFactory;
 use Exception;
 
-class ProductController extends BaseController
+/**
+ * Class ProductController
+ *
+ * Handles operations related to managing products, including saving, retrieving,
+ * and associating additional data like prices and images.
+ */
+class ProductController extends QueryableController
 {
     /**
-     * Save products data to the database.
+     * @var PDO The database connection instance.
+     */
+    protected PDO $db;
+
+    /**
+     * Constructor to initialize the database connection.
      *
-     * @param array $data Data containing products and category mappings.
-     * @return mixed
+     * @param PDO $db The database connection instance.
+     */
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * Save products and their associated data to the database.
+     *
+     * @param array $data Associative array containing:
+     * @return array Array mapping product client IDs to database IDs.
      */
     public function save(array $data): array
     {
@@ -23,24 +45,36 @@ class ProductController extends BaseController
             try {
                 $categoryId = $categoryIds[$productData['category']] ?? null;
 
+                // Validate the presence of the category ID
                 if (!$categoryId) {
                     throw new Exception("Category not found for product '{$productData['name']}'");
                 }
 
-                $product = ProductFactory::createProduct(
+                // Create a product instance using the factory
+                $product = ProductFactory::create(
                     $this->db,
-                    $productData,
-                    $categoryId,
                     $productData['category']
                 );
 
-                $productId = $product->save();
+                // Prepare data for saving
+                $data = [
+                    'productId' => $productData['id'],
+                    'name' => $productData['name'],
+                    'description' => $productData['description'],
+                    'inStock' => $productData['inStock'] ? 1 : 0,
+                    'brand' => $productData['brand'],
+                    'categoryId' => $categoryId
+                ];
+
+                // Save product and map client ID to database ID
+                $productId = $product->save($data);
                 $productIds[$productData['id']] = $productId;
 
-                //$this->handleAttributes($productId, $productData['attributes'] ?? []);
+                // Handle associated data: prices and images
                 $this->handlePrices($productId, $productData['prices'] ?? []);
                 $this->handleImages($productId, $productData['gallery'] ?? []);
             } catch (Exception $e) {
+                // Log the error with specific product details for easier debugging
                 echo "Error saving product '{$productData['name']}': " . $e->getMessage() . "<br>";
             }
         }
@@ -49,16 +83,19 @@ class ProductController extends BaseController
     }
 
     /**
-     * Handle product prices.
+     * Process and save product prices.
      *
-     * @param string $productId ID of the product.
-     * @param array $pricesData Prices data to process.
+     * @param string $productId The ID of the product in the database.
+     * @param array $pricesData Array of price details.
      * @return void
+     * @throws Exception If required price data is missing.
      */
     private function handlePrices(string $productId, array $pricesData): void
     {
         foreach ($pricesData as $priceData) {
             $priceModel = new PriceController($this->db);
+
+            // Validate price data
             if (isset($priceData['currency']['symbol'], $priceData['amount'])) {
                 $data = [
                     'currencyLabel' =>  $priceData['currency']['label'],
@@ -66,18 +103,21 @@ class ProductController extends BaseController
                     'amount' => $priceData['amount'],
                     'productId' => $productId
                 ];
+
+                // Save the price data
                 $priceModel->save($data);
             } else {
+                // Throw a more descriptive exception if the operation fails
                 throw new Exception("Missing currency symbol or amount for product ID $productId");
             }
         }
     }
 
     /**
-     * Handle product images.
+     * Process and save product images.
      *
-     * @param string $productId ID of the product.
-     * @param array $imagesData Images data to process.
+     * @param string $productId The ID of the product in the database.
+     * @param array $imagesData Array of image URLs.
      * @return void
      */
     private function handleImages(string $productId, array $imagesData): void
@@ -87,8 +127,23 @@ class ProductController extends BaseController
                 'url' => $imageUrl,
                 'productId' => $productId
             ];
+
+            // Save the image data
             $imageModel = new ProductImageController($this->db);
             $imageModel->save($data);
         }
+    }
+
+    /**
+     * Retrieve product data based on the type.
+     *
+     * @param mixed $type The type of product data to fetch.
+     * @return array Array of product data.
+     */
+    public function get($type): array
+    {
+        $product = ProductFactory::create($this->db, $type);
+
+        return $product->get(null);
     }
 }
