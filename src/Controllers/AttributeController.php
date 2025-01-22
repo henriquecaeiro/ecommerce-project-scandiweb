@@ -38,8 +38,10 @@ class AttributeController extends BaseController
                     //Save attribute
                     $attributeId = $attributeModel->save($attributeModelData);
 
-                    // Map the product ID and attribute name to the attribute ID
-                    $attributeMap[$productData['id']][$attributeData['name']] = $attributeId;
+                    if ($attributeId !== 0) {
+                        // Map the attribute name to the attribute ID if the attribute id exists
+                        $attributeMap[$attributeData['name']] = $attributeId;
+                    }
                 } catch (Exception $e) {
                     echo "Error saving attribute '{$attributeData['name']}': " . $e->getMessage() . "<br>";
                 }
@@ -48,12 +50,13 @@ class AttributeController extends BaseController
 
         // Save attribute values for each product
         foreach ($data['productsData'] as $productData) {
-            $prodId = $productIds[$productData['id']] ?? null;
+            $productId = $productIds[$productData['id']] ?? null;
 
             foreach ($productData['attributes'] as $attributeData) {
-                $attributeId = $attributeMap[$productData['id']][$attributeData['name']] ?? null;
+                $attributeId = $attributeMap[$attributeData['name']] ?? null;
                 if (!$attributeId) {
-                    continue;
+                    echo "Error saving attribute '{$attributeData['name']}'";
+                    exit;
                 }
 
                 foreach ($attributeData['items'] as $attributeValueData) {
@@ -69,7 +72,7 @@ class AttributeController extends BaseController
                             'value' =>  $attributeValueData['value'],
                             'displayValue' =>  $attributeValueData['displayValue'],
                             'attributeId' => $attributeId,
-                            'productId' => $prodId
+                            'productId' => $productId
                         ];
 
                         $attributeValue->save($data);
