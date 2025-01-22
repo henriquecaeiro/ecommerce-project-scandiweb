@@ -73,9 +73,12 @@ class ProductController extends QueryableController
                 // Handle associated data: prices and images
                 $this->handlePrices($productId, $productData['prices'] ?? []);
                 $this->handleImages($productId, $productData['gallery'] ?? []);
-            } catch (Exception $e) {
-                // Log the error with specific product details for easier debugging
-                echo "Error saving product '{$productData['name']}': " . $e->getMessage() . "<br>";
+            } catch (\Exception $e) {
+                // Log the detailed error message for debugging
+                error_log("Error saving product '{$productData['id']}': " . $e->getMessage());
+
+                // Display a user-friendly message
+                echo "Error saving product.Please contact the admin.";
             }
         }
 

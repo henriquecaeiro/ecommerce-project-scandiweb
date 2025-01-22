@@ -5,7 +5,6 @@ namespace App\Controllers;
 use GraphQL\Type\Schema;
 use GraphQL\GraphQL as WebonyxGraphQL;
 use GraphQL\Error\DebugFlag as Debug;
-use Throwable;
 
 /**
  * Handles GraphQL query execution.
@@ -40,7 +39,7 @@ class GraphQL
 
             // Convert the result to an array, including debug information
             return $result->toArray(Debug::RETHROW_INTERNAL_EXCEPTIONS | Debug::INCLUDE_DEBUG_MESSAGE);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             // Log the error details for debugging purposes
             error_log("GraphQL Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
 

@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\ProductImage;
-use Exception;
 
 /**
  * Class ProductImageController
@@ -26,9 +25,12 @@ class ProductImageController extends BaseController
 
             // Save the image data and return the ID of the saved record
             return $image->save($data);
-        } catch (Exception $e) {
-            // Log the error and return a meaningful message
-            echo "Error saving image for product ID {$data['productId']}: " . $e->getMessage();
+        } catch (\Exception $e) {
+            // Log the detailed error message for debugging
+            error_log("Error saving product image for product id: '{$data['productId']}': " . $e->getMessage());
+
+            // Display a user-friendly message
+            echo "Error saving image for product";
             return 0; // Return 0 to indicate failure
         }
     }

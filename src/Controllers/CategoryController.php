@@ -37,8 +37,16 @@ class CategoryController extends QueryableController
      */
     public function save(array $data): mixed
     {
-        $category = new Category($this->db);
-        return $category->save($data['name']);
+        try {
+            $category = new Category($this->db);
+            return $category->save($data['name']);
+        } catch (\Exception $e) {
+            // Log the detailed error message for debugging
+            error_log("Error saving category '{$data['name']}': " . $e->getMessage());
+        
+            // Display a user-friendly message
+            echo "An error occurred while saving the category.  Please contact the admin.";
+        }
     }
 
     /**

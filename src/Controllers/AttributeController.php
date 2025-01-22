@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\Attribute;
 use App\Factories\AttributeValueFactory;
-use Exception;
 
 class AttributeController extends BaseController
 {
@@ -42,8 +41,12 @@ class AttributeController extends BaseController
                         // Map the attribute name to the attribute ID if the attribute id exists
                         $attributeMap[$attributeData['name']] = $attributeId;
                     }
-                } catch (Exception $e) {
-                    echo "Error saving attribute '{$attributeData['name']}': " . $e->getMessage() . "<br>";
+                } catch (\Exception $e) {
+                    // Log the detailed error message for debugging
+                    error_log("Error saving attribute '{$attributeData['name']}': " . $e->getMessage());
+                
+                    // Display a user-friendly message
+                    echo "An error occurred while saving the attribute. Please contact the admin.";
                 }
             }
         }
@@ -76,7 +79,7 @@ class AttributeController extends BaseController
                         ];
 
                         $attributeValue->save($data);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         echo "Error saving attribute value '{$attributeValueData['value']}': " . $e->getMessage() . "<br>";
                     }
                 }
