@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Exception;
+use RuntimeException;
 use PDO;
 
 /**
@@ -17,7 +19,7 @@ class TechProduct extends AbstractProduct
      *
      * @param mixed|null $id Optional parameter for filtering by product ID. Currently not used in the query.
      * @return array An associative array of products in the "tech" category, including related metadata.
-     * @throws \RuntimeException If an error occurs during data retrieval or the query fails.
+     * @throws RuntimeException If an error occurs during data retrieval or the query fails.
      */
     public function get(mixed $id = null): array
     {
@@ -54,14 +56,14 @@ class TechProduct extends AbstractProduct
 
             // Handle cases where no results are returned
             if ($result === false) {
-                throw new \RuntimeException("Failed to fetch data from table products");
+                throw new RuntimeException("Failed to fetch data from table products");
             }
 
             // return the results
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Exception $e) {
             // Catch any exceptions or errors and rethrow as a RuntimeException with context
-            throw new \RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
+            throw new RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
         }
     }
 }

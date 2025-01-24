@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use RuntimeException;
+use Exception;
 use PDO;
 
 /**
@@ -16,7 +18,7 @@ class ClothesProduct extends AbstractProduct
      *
      * @param mixed $id Optional ID for fetching specific product data (currently unused).
      * @return array An array of products within the 'clothes' category.
-     * @throws \RuntimeException If there is an error during data retrieval.
+     * @throws RuntimeException If there is an error during data retrieval.
      */
     public function get(mixed $id): array
     {
@@ -53,14 +55,14 @@ class ClothesProduct extends AbstractProduct
 
             // Throw exception if the operation fails
             if ($result === false) {
-                throw new \RuntimeException("Failed to fetch data from table products");
+                throw new RuntimeException("Failed to fetch data from table products");
             }
 
             // Return the results
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Exception $e) {
             // Throw a more descriptive exception if the operation fails
-            throw new \RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
+            throw new RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
         }
     }
 }

@@ -12,9 +12,6 @@ use PDOException;
  */
 class ProductImage extends BaseModel
 {
-    /** @var PDO Database connection instance. */
-    public PDO $db;
-
     /**
      * ProductImage constructor.
      *
@@ -35,7 +32,7 @@ class ProductImage extends BaseModel
      * @return int The ID of the saved product image record.
      * @throws PDOException If an error occurs during the save operation.
      */
-    public function save($data): int
+    public function save(mixed $data): int
     {
         // Prepare the SQL statement to insert image data into the database
         try {
@@ -44,8 +41,8 @@ class ProductImage extends BaseModel
             );
 
             // Bind the image data parameters to the prepared statement
-            $stmt->bindParam(':product_id', $data['productId']);
-            $stmt->bindParam(':url', $data['url']);
+            $stmt->bindParam(':product_id', $data['productId'], PDO::PARAM_STR);
+            $stmt->bindParam(':url', $data['url'], PDO::PARAM_STR);
             
             // Execute the statement
             $stmt->execute();

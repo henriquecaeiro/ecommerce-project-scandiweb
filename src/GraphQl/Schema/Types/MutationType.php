@@ -5,6 +5,8 @@ namespace App\GraphQL\Schema\Types;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use App\GraphQL\Resolvers\OrderResolver;
+use App\Controllers\OrderController;
+use PDO;
 
 /**
  * Class MutationType
@@ -14,37 +16,33 @@ use App\GraphQL\Resolvers\OrderResolver;
 class MutationType extends ObjectType
 {
     /**
+     * @var PDO Database connection instance.
+     */
+    protected PDO $db;
+
+    /**
      * MutationType constructor.
      *
-     * Sets up the GraphQL mutation type with available fields and resolvers.
+     * Configures the available mutation fields and their resolvers.
+     *
+     * @param PDO $db The database connection instance.
      */
-    public function __construct()
+    public function __construct(PDO $db)
     {
+        $orderResolver = new OrderResolver(new OrderController($db));
+
+        // Configuration for the mutation type
         $config = [
-            // The name of this GraphQL type
             'name' => 'Mutation',
-
-            // Fields available for mutations
             'fields' => [
-                'createOrder' => [
-                    // The return type of the mutation (string for simplicity)
+                'order' => [
                     'type' => Type::string(),
-
-                    // Arguments required for the mutation
                     'args' => [
-                        'items' => [
-                            // A list of strings representing the order items
-                            'type' => Type::listOf(Type::string()),
-                            // Optionally, you could add descriptions to the arguments for clarity
-                            'description' => 'List of items to include in the order',
+                        'orderData' => [
+                            'type' => Type::nonNull(new OrderInputType()), 
                         ],
                     ],
-
-                    // Resolver function to handle the mutation logic
-                    'resolve' => function ($root, $args) {
-                        // Delegates the creation of an order to the OrderResolver
-                        return OrderResolver::createOrder($args);
-                    },
+                    'resolve' => [$orderResolver, 'createOrder'],
                 ],
             ],
         ];

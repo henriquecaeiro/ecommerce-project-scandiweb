@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Category;
+use Exception;
 use PDO;
 
 /**
@@ -40,12 +41,12 @@ class CategoryController extends QueryableController
         try {
             $category = new Category($this->db);
             return $category->save($data['name']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log the detailed error message for debugging
             error_log("Error saving category '{$data['name']}': " . $e->getMessage());
         
             // Display a user-friendly message
-            echo "An error occurred while saving the category.  Please contact the admin.";
+            throw new Exception($e->getMessage());
         }
     }
 

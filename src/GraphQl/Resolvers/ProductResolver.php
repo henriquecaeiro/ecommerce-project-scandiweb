@@ -34,7 +34,7 @@ class ProductResolver
      * @param array $args The arguments provided in the GraphQL query.
      * @return array The resolved attributes as an associative array.
      */
-    public function findAll($root, $args): array
+    public function findAll(mixed $root, array $args): array
     {
         // Extract arguments
         $category = $args['category'];

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Price;
+use Exception;
 
 /**
  * Class PriceController
@@ -29,12 +30,12 @@ class PriceController extends BaseController
 
             // Save the price data to the database and return the ID
             return $price->save($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log the detailed error message for debugging
             error_log("Error saving price with product id: '{$data['productId']}': " . $e->getMessage());
         
             // Display a user-friendly message
-            echo "An error occurred while saving the price. Please contact the admin.";
+            throw "An error occurred while saving the price: " . $e->getMessage();
         }
     }
 }

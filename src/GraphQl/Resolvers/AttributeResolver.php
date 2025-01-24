@@ -34,7 +34,7 @@ class AttributeResolver
      * @param array $args The arguments provided in the GraphQL query.
      * @return array The resolved attributes as an associative array.
      */
-    public function findByType($root, $args): array
+    public function findByType(mixed $root, array $args): array
     {
         // Extract arguments
         $productId = $args['product_id'];

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Exception;
+use RuntimeException;
 use PDO;
 
 /**
@@ -39,9 +41,9 @@ class TextAttributeValue extends AbstractAttributeValue
 
             // Fetch and return the results as an associative array
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (\Throwable $e) {
+        } catch (Exception $e) {
             // Handle any exceptions or errors during query execution
-            throw new \RuntimeException("Error fetching text attributes: " . $e->getMessage());
+            throw new RuntimeException("Error fetching text attributes: " . $e->getMessage());
         }
     }
 }

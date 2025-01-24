@@ -12,9 +12,6 @@ use PDOException;
  */
 class Price extends BaseModel
 {
-    /** @var PDO Database connection instance. */
-    public PDO $db;
-
     /**
      * Price constructor.
      *
@@ -33,7 +30,7 @@ class Price extends BaseModel
      * @return int The ID of the saved price record.
      * @throws PDOException If an error occurs during the save operation.
      */
-    public function save($data): int
+    public function save(mixed $data): int
     {
         // Prepare the SQL statement for inserting price data into the database
         try {
@@ -43,10 +40,10 @@ class Price extends BaseModel
             );
 
             // Bind the data parameters to the prepared statement
-            $stmt->bindParam(':product_id', $data['productId']);
-            $stmt->bindParam(':currency_label',  $data['currencyLabel']);
-            $stmt->bindParam(':currency_symbol', $data['currencySymbol']);
-            $stmt->bindParam(':amount', $data['amount']);
+            $stmt->bindParam(':product_id', $data['productId'], PDO::PARAM_STR);
+            $stmt->bindParam(':currency_label',  $data['currencyLabel'], PDO::PARAM_STR);
+            $stmt->bindParam(':currency_symbol', $data['currencySymbol'], PDO::PARAM_STR);
+            $stmt->bindParam(':amount', $data['amount'], PDO::PARAM_STR);
 
             // Execute the statement
             $stmt->execute();

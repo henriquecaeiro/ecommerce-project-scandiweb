@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use PDO;
 use RuntimeException;
-use Throwable;
+use Exception;
+use PDO;
+
 
 /**
  * Class AllProduct
@@ -25,7 +26,7 @@ class AllProduct extends AbstractProduct
     public function get(mixed $id = null): array
     {
         try {
-            // SQL query to fetch product data with associated category, image, and price details
+            // query to fetch product data with associated category, image, and price details
             $query = "
                 SELECT 
                     products.id, 
@@ -72,7 +73,7 @@ class AllProduct extends AbstractProduct
 
             // Return the results
             return $result;
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             // Throw a more descriptive exception if the operation fails
             throw new RuntimeException("Error in AllProduct::get: " . $e->getMessage());
         }

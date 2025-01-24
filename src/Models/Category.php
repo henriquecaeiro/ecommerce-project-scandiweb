@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use InvalidArgumentException;
+use RuntimeException;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -30,30 +33,37 @@ class Category extends QueryableModel
      * @param string $name Name of the category.
      * @return int The ID of the saved category.
      * @throws PDOException If an error occurs during the save operation.
-     * @throws \Exception If a duplicate entry is detected.
+     * @throws Exception If a duplicate entry is detected.
      */
-    public function save(...$params): mixed
+    public function save(mixed $data): mixed
     {
-        $name = $params[0];
-
         try {
+            // Handle cases where $data is a string
+            if (is_string($data)) {
+                $name = $data;
+            } elseif (is_array($data) && isset($data['name'])) {
+                $name = $data['name'];
+            } else {
+                throw new InvalidArgumentException("Invalid data format. Expected string or array with 'name'.");
+            }
+    
             // Prepare the SQL statement for inserting category 
             $stmt = $this->db->prepare(
                 'INSERT INTO categories (name) VALUES (:name)'
             );
-
+    
             // Bind parameters to the prepared statement
-            $stmt->bindParam(':name', $name);
-
+            $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+    
             // Execute the statement
             $stmt->execute();
-
+    
             // Return the ID
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
             // Handle duplicate entry error
             if ($e->errorInfo[1] == 1062) {
-                throw new \Exception("The database was already imported");
+                throw new Exception("The database was already imported");
             } else {
                 throw new PDOException("Error saving category: " . $e->getMessage());
             }
@@ -75,12 +85,12 @@ class Category extends QueryableModel
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if ($result === false) {
-                throw new \RuntimeException("Failed to fetch data from table categories");
+                throw new RuntimeException("Failed to fetch data from table categories");
             }
 
             return $result;
-        } catch (\Throwable $e) {
-            throw new \RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
+        } catch (Exception $e) {
+            throw new RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
         }
     }
 }

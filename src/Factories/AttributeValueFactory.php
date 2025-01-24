@@ -18,8 +18,8 @@ class AttributeValueFactory
     /**
      * Creates the appropriate AbstractAttributeValue instance according to the provided $type.
      *
-     * @param PDO    $db           Database connection instance.
-     * @param string $type         The attribute type .
+     * @param PDO    $db  Database connection instance.
+     * @param string $type The attribute type .
      *
      * @return AbstractAttributeValue Returns an instance of a subclass of AbstractAttributeValue.
      */

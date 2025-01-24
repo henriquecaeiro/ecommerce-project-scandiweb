@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 
@@ -13,9 +14,6 @@ use PDOException;
  */
 abstract class AbstractProduct extends QueryableModel
 {
-    /** @var PDO Database connection instance. */
-    public PDO $db;
-
     /**
      * AbstractProduct constructor.
      *
@@ -28,7 +26,7 @@ abstract class AbstractProduct extends QueryableModel
         parent::__construct($dbConnection);
     }
 
-        /**
+    /**
      * Saves product data to the database.
      *
      * Inserts product details into the `products` table.
@@ -36,8 +34,9 @@ abstract class AbstractProduct extends QueryableModel
      * @param array $data Product data array.
      * @return string The product ID of the saved product.
      * @throws PDOException If an error occurs while saving the product.
+     * @throws InvalidArgumentException If required data is missing.
      */
-    public function save($data): string
+    public function save(mixed $data): string
     {
         try {
             // Prepare the SQL statement for inserting product data
@@ -48,13 +47,13 @@ abstract class AbstractProduct extends QueryableModel
                     (:id, :name, :description, :in_stock, :category_id, :brand)
             ');
 
-            // Bind the parameters to the statement
-            $stmt->bindParam(':id', $data['productId']);
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':description', $data['description']);
-            $stmt->bindParam(':in_stock', $data['inStock']);
-            $stmt->bindParam(':brand', $data['brand']);
-            $stmt->bindParam(':category_id', $data['categoryId']);
+            // Bind the parameters to the statement with specific types
+            $stmt->bindParam(':id', $data['productId'], PDO::PARAM_STR);       
+            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);              
+            $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR); 
+            $stmt->bindParam(':in_stock', $data['inStock'], PDO::PARAM_INT);       
+            $stmt->bindParam(':brand', $data['brand'], PDO::PARAM_STR);           
+            $stmt->bindParam(':category_id', $data['categoryId'], PDO::PARAM_INT); 
 
             // Execute the statement
             $stmt->execute();
@@ -62,7 +61,7 @@ abstract class AbstractProduct extends QueryableModel
             // Return the ID of the saved product
             return $data['productId'];
         } catch (PDOException $e) {
-             // Throw a detailed exception if the save operation fails
+            // Throw a detailed exception if the save operation fails
             throw new PDOException("Error saving Product: " . $e->getMessage());
         }
     }

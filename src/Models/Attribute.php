@@ -43,8 +43,8 @@ class Attribute extends BaseModel
             );
 
             // Bind the parameters to the query
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':type', $data['type']);
+            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
+            $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
 
             // Execute the query
             $stmt->execute();

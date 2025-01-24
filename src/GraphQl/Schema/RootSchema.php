@@ -46,7 +46,7 @@ class RootSchema
             'query' => new QueryType($this->db),
 
             // Define the Mutation type
-            'mutation' => new MutationType(),
+            'mutation' => new MutationType($this->db),
         ]);
     }
 }

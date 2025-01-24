@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use BadMethodCallException;
 
 /**
  * Class QueryableModel
@@ -31,8 +32,8 @@ abstract class QueryableModel extends BaseModel
      * @return mixed Throws an exception unless overridden in a derived class.
      * @throws \BadMethodCallException If the method is not implemented in the derived class.
      */
-    public function save($data): mixed
+    public function save(mixed $data): mixed
     {
-        throw new \BadMethodCallException("Method 'save' not implemented in " . static::class);
+        throw new BadMethodCallException("Method 'save' not implemented in " . static::class);
     }
 }

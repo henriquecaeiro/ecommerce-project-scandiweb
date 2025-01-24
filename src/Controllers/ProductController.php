@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use PDO;
 use App\Factories\ProductFactory;
+use RuntimeException;
 use Exception;
 
 /**
@@ -14,9 +15,7 @@ use Exception;
  */
 class ProductController extends QueryableController
 {
-    /**
-     * @var PDO The database connection instance.
-     */
+    /** @var PDO The database connection instance. */
     protected PDO $db;
 
     /**
@@ -32,8 +31,9 @@ class ProductController extends QueryableController
     /**
      * Save products and their associated data to the database.
      *
-     * @param array $data Associative array containing:
+     * @param array $data Associative array containing products and category mappings.
      * @return array Array mapping product client IDs to database IDs.
+     * @throws RuntimeException If a critical error occurs during saving.
      */
     public function save(array $data): array
     {
@@ -45,40 +45,32 @@ class ProductController extends QueryableController
             try {
                 $categoryId = $categoryIds[$productData['category']] ?? null;
 
-                // Validate the presence of the category ID
                 if (!$categoryId) {
-                    throw new Exception("Category not found for product '{$productData['name']}'");
+                    throw new RuntimeException("Category not found for product '{$productData['name']}'");
                 }
 
-                // Create a product instance using the factory
-                $product = ProductFactory::create(
-                    $this->db,
-                    $productData['category']
-                );
+                $product = ProductFactory::create($this->db, $productData['category']);
 
-                // Prepare data for saving
-                $data = [
+                $productDataFormatted = [
                     'productId' => $productData['id'],
                     'name' => $productData['name'],
                     'description' => $productData['description'],
                     'inStock' => $productData['inStock'] ? 1 : 0,
                     'brand' => $productData['brand'],
-                    'categoryId' => $categoryId
+                    'categoryId' => $categoryId,
                 ];
 
-                // Save product and map client ID to database ID
-                $productId = $product->save($data);
+                $productId = $product->save($productDataFormatted);
                 $productIds[$productData['id']] = $productId;
 
-                // Handle associated data: prices and images
                 $this->handlePrices($productId, $productData['prices'] ?? []);
                 $this->handleImages($productId, $productData['gallery'] ?? []);
-            } catch (\Exception $e) {
-                // Log the detailed error message for debugging
-                error_log("Error saving product '{$productData['id']}': " . $e->getMessage());
-
-                // Display a user-friendly message
-                echo "Error saving product.Please contact the admin.";
+            } catch (RuntimeException $e) {
+                error_log("Runtime error saving product '{$productData['id']}': " . $e->getMessage());
+                throw $e;
+            } catch (Exception $e) {
+                error_log("Unexpected error saving product '{$productData['id']}': " . $e->getMessage());
+                throw new RuntimeException("An unexpected error occurred while saving product '{$productData['id']}'.");
             }
         }
 
@@ -91,28 +83,25 @@ class ProductController extends QueryableController
      * @param string $productId The ID of the product in the database.
      * @param array $pricesData Array of price details.
      * @return void
-     * @throws Exception If required price data is missing.
+     * @throws RuntimeException If required price data is missing.
      */
     private function handlePrices(string $productId, array $pricesData): void
     {
         foreach ($pricesData as $priceData) {
+            if (empty($priceData['currency']['symbol']) || empty($priceData['amount'])) {
+                throw new RuntimeException("Missing currency symbol or amount for product ID $productId");
+            }
+
             $priceModel = new PriceController($this->db);
 
-            // Validate price data
-            if (isset($priceData['currency']['symbol'], $priceData['amount'])) {
-                $data = [
-                    'currencyLabel' =>  $priceData['currency']['label'],
-                    'currencySymbol' => $priceData['currency']['symbol'],
-                    'amount' => $priceData['amount'],
-                    'productId' => $productId
-                ];
+            $priceDataFormatted = [
+                'currencyLabel' => $priceData['currency']['label'],
+                'currencySymbol' => $priceData['currency']['symbol'],
+                'amount' => $priceData['amount'],
+                'productId' => $productId,
+            ];
 
-                // Save the price data
-                $priceModel->save($data);
-            } else {
-                // Throw a more descriptive exception if the operation fails
-                throw new Exception("Missing currency symbol or amount for product ID $productId");
-            }
+            $priceModel->save($priceDataFormatted);
         }
     }
 
@@ -126,14 +115,14 @@ class ProductController extends QueryableController
     private function handleImages(string $productId, array $imagesData): void
     {
         foreach ($imagesData as $imageUrl) {
-            $data = [
+            $imageModel = new ProductImageController($this->db);
+
+            $imageData = [
                 'url' => $imageUrl,
-                'productId' => $productId
+                'productId' => $productId,
             ];
 
-            // Save the image data
-            $imageModel = new ProductImageController($this->db);
-            $imageModel->save($data);
+            $imageModel->save($imageData);
         }
     }
 
