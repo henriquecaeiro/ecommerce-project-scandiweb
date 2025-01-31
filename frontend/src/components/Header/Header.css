@@ -1,43 +1,78 @@
-/* Garante que os itens ocupem a mesma altura do header */
-.navbar-nav {
-  height: 100%;
+header {
+  height: 80px;
 }
 
-.nav-item {
-  height: 100%; /* Ocupa toda a altura do header */
+.navbar {
+  height: 80px;
+}
+
+.navbar-nav {
+  margin-left: 90px;
+}
+
+.nav-link {
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 600;
   position: relative;
-}
-
-.nav-item .nav-link {
-  color: #000;
+  color: #1D1F22;
   transition: color 0.3s ease;
   text-align: center;
-  padding: 0 1rem; /* Controla o espaçamento horizontal */
+  padding: 0 1rem;
 }
 
-.nav-item.active-item .nav-link {
-  color: #5ECE7B; /* Cor do item ativo */
+.nav-link.active-item {
+  color: #5ECE7B;
 }
 
 .active-underline {
-  position: absolute;
   bottom: 0;
-  left: 0;
-  width: 100%;
   height: 2px;
-  background-color: #5ECE7B; /* Cor da borda inferior */
+  background-color: #5ECE7B;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Garantir espaçamento igual ao header */
+
 .container {
-  padding-left: 15px; /* Padding padrão */
-  padding-right: 15px; /* Padding padrão */
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
-header{
-  height: 80px;
+.shopping-cart{
+  margin-right: 100px;
+}
+
+@media (max-width: 991px) {
+  .navbar-nav {
+    margin: 0;
+  }
+
+  .nav-link {
+    margin: 5px 0;
+  }
+
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .active-underline.hide {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  
+  .active-underline.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .shopping-cart{
+    margin-right: 20px;
+  }
+
 }

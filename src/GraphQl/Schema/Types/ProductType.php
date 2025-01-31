@@ -35,8 +35,22 @@ class ProductType extends ObjectType
                 // Indicates whether the product is in stock (1) or out of stock (0)
                 'in_stock' => Type::int(),
 
+                // The description of the product
+                'description' => Type::string(),
+
                 // The URL for the product's image
-                'image_url' => Type::string(),
+                'image_url' => [
+                    'type' => Type::listOf(Type::string()),
+                    'resolve' => function ($product, $args, $context, $info) {
+                        // Check if images are already in array form
+                        if (is_array($product['image_url'])) {
+                            return $product['image_url'];
+                        }
+
+                        // If not, wrap the single image string in an array
+                        return [$product['image_url']];
+                    }
+                ],
 
                 // The brand associated with the product
                 'brand' => Type::string(),

@@ -1,0 +1,167 @@
+.product-name{
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.multiple-attributes {
+    width: 80%;
+}
+
+.price-header{
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.price{
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.price-container{
+  margin-bottom: 10px; 
+}
+
+.shopping-button{
+    height: 52px;
+    width: 292px;
+    margin: 20px 0;
+    background-color: #5ECE7B;
+    color: white;
+    border: none;
+    border-radius: 0; 
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.shopping-button:hover{
+    background-color: #5ECDA1;
+}
+
+.disabled{
+    height: 52px;
+    width: 292px;
+    margin: 20px 0;
+    background-color: #8D8F9A;
+    opacity: 0.5;
+    color: white;
+    border: none;
+    border-radius: 0; 
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.disabled:hover {
+    opacity: 1;
+}
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+
+}
+
+.img-container.active,
+.img-container:hover {
+    border: 2px solid #1D1F22;
+    margin: 2px;
+}
+
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 575px;
+    height: 478px;
+    position: relative;
+}
+
+.carousel-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+}
+
+.carousel-btn {
+    height: 32px;
+    width: 32px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.73);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.out-of-stock-bg{
+    background-color: white;
+    opacity: 0.5;
+}
+
+.out-of-stock{
+    left: 35%;
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
+.description {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+}
+
+
+@media (max-width: 991px) {
+
+    .product-details {
+        margin-bottom: 0;
+    }
+
+    .product-name{
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .price-container{
+        display: flex;
+        align-items: center; 
+        margin: 0 10px 0 0;
+    }
+
+    .attributes-container{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .price-header{
+        margin: 0 10px 0 0;
+    }
+
+    .shopping-container{
+        display: flex;
+    }
+
+    .description {
+        margin: 0;
+    }
+
+}

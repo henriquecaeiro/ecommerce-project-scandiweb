@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import Header from "./components/Header/Header";
 import ErrorScreen from "./components/ErrorScreen/ErrorScreen";
 import { useError } from "./context/ErrorContext";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
 
 const App: React.FC = () => {
   const { error } = useError();
@@ -17,6 +18,7 @@ const App: React.FC = () => {
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/details/:id" element={<ProductDetail/>} />
         </Routes>
       </Router>
     </ApolloProvider>

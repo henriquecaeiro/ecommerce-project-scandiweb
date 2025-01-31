@@ -18,5 +18,5 @@ abstract class QueryableController extends BaseController
      * @param mixed $param The parameter(s) used for querying records. 
      * @return array The fetched records as an associative array.
      */
-    abstract public function get(mixed $param): array;
+    abstract public function get(mixed $data): array;
 }

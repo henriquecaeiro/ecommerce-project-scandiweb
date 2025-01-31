@@ -132,10 +132,10 @@ class ProductController extends QueryableController
      * @param mixed $type The type of product data to fetch.
      * @return array Array of product data.
      */
-    public function get($type): array
+    public function get(mixed $data): array
     {
-        $product = ProductFactory::create($this->db, $type);
+        $product = ProductFactory::create($this->db, $data["type"]);
 
-        return $product->get(null);
+        return $product->get($data["id"]);
     }
 }

@@ -9,8 +9,8 @@
 }
 
 .productImage-size {
-    height: 75%;
-    width: 80%;
+    width: 354px;
+    height: 330px;    
 }
 
 .out-of-stock {
@@ -39,13 +39,15 @@
 }
 
 .product-title {
-    font-weight: 300;
     font-size: 18px;
+    font-weight: 300;
+    line-height: 28.8px;
 }
 
 .product-price {
-    font-weight: 500;
     font-size: 18px;
+    font-weight: 600;
+    line-height: 28.8px; 
 }
 
 .product-card {

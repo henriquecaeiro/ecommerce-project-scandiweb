@@ -202,8 +202,8 @@ Variables:
 ```
 #### Fetch Products:
 ```graphql
-query GetProducts($category: String!) {
-  products(category: $category) {
+query GetProducts($category: String!, $id: String) {
+  products(category: $category, id: $id) {
     id
     name
     in_stock

@@ -50,7 +50,7 @@ const HomePage: React.FC = () => {
     }, [loading, finishLoading, error, setError]);
 
     return (
-        <div className="container-fluid">
+        <div className="container-fluid z-n1">
             <div className="row mt-5 ms-5">
                 <div className="col justify-content-start">
                     <h1 className="page-title">{capitalizeFirst(activeItem)}</h1>
