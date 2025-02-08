@@ -7,6 +7,8 @@ import Header from "./components/Header/Header";
 import ErrorScreen from "./components/ErrorScreen/ErrorScreen";
 import { useError } from "./context/ErrorContext";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import CartOverlay from "./components/CartOverlay/CartOverlay";
+import NotFound from "./pages/NotFound/NotFound";
 
 const App: React.FC = () => {
   const { error } = useError();
@@ -16,9 +18,11 @@ const App: React.FC = () => {
       {error && <ErrorScreen />}
       <Router>
         <Header />
+        <CartOverlay />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/details/:id" element={<ProductDetail/>} />
+          <Route path="*" element={<NotFound/>} />
         </Routes>
       </Router>
     </ApolloProvider>

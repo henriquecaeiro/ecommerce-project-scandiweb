@@ -8,6 +8,7 @@ import App from "./App";
 import { CategoryProvider } from "./context/CategoryContext";
 import { LoadingProvider } from "./context/LoadingContext";
 import { ErrorProvider } from "./context/ErrorContext";
+import { CartProvider } from "./context/CartContext";
 
 const rootElement = document.getElementById("root");
 
@@ -19,9 +20,11 @@ createRoot(rootElement).render(
   <StrictMode>
     <ErrorProvider>
       <LoadingProvider>
-        <CategoryProvider>
-          <App />
-        </CategoryProvider>
+        <CartProvider>
+          <CategoryProvider>
+            <App />
+          </CategoryProvider>
+        </CartProvider>
       </LoadingProvider>
     </ErrorProvider>
   </StrictMode>

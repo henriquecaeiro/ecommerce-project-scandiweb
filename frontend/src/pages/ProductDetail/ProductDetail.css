@@ -24,7 +24,7 @@
 
 .shopping-button{
     height: 52px;
-    width: 292px;
+    width: 80%;
     margin: 20px 0;
     background-color: #5ECE7B;
     color: white;
@@ -41,19 +41,36 @@
 
 .disabled{
     height: 52px;
-    width: 292px;
+    width: 80%;
     margin: 20px 0;
     background-color: #8D8F9A;
     opacity: 0.5;
     color: white;
     border: none;
     border-radius: 0; 
-    padding: 16px 32px;
     font-size: 16px;
     font-weight: 500;
 }
 
-.disabled:hover {
+
+.return-link {
+    border-radius: 0; 
+    opacity: 0.5;
+    text-decoration: none;
+    background-color: #8D8F9A;
+    width: 80%;
+    height: 52px;
+}
+
+.return-link-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    height: 20px;
+}
+
+.disabled:hover,
+.return-link:hover {
     opacity: 1;
 }
 
@@ -70,10 +87,27 @@
 
 }
 
+.thumbnail-error {
+    width: 64px;
+    height: 64px;
+    cursor: pointer;
+}
+
 .img-container.active,
 .img-container:hover {
     border: 2px solid #1D1F22;
     margin: 2px;
+}
+
+.img-container.active-error {
+    border: 2px solid #1D1F22;
+    margin: 2px;
+    padding: 2px;
+}
+
+.icon-product-error {
+    height: 128px;
+    width: 128px;
 }
 
 .carousel-container {

@@ -9,6 +9,8 @@ import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import useDelayedLoading from "../../hooks/useDelayedLoading";
 import logo from "../../assets/logo.svg";
 import cart from "../../assets/cart-black.svg";
+import { useCart } from "../../context/CartContext";
+import useCartLocal from "../../hooks/useCartLocal";
 
 interface Category {
     name: string
@@ -21,13 +23,15 @@ interface Category {
  */
 const Header: React.FC = () => {
     const { activeItem, setActiveItem } = useCategory();
+    const { isOpen, setIsOpen } = useCart();
     const { setError } = useError();
     const { loading, error, data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
+    const [cartItems, setCartItems,getStoredCart] = useCartLocal("cart", [])
 
     const [underlineStyle, setUndelineStyle] = useState<{ left: string; width: string, top: string }>({ left: "0px", width: "0px", top: "0px" });
     const activeItemRef = useRef<HTMLAnchorElement | null>(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [cartQuantity, setCartQuantity] = useState<number>(0)
 
     // Add a 2.5-second delay for better loading experience
     const showLoading = useDelayedLoading(loading, 2500);
@@ -40,9 +44,20 @@ const Header: React.FC = () => {
     }, [error, setError]);
 
     useEffect(() => {
-        window.addEventListener("resize", updateUnderlinePosition);
-        return () => window.removeEventListener("resize", updateUnderlinePosition);
-    }, [])
+        const updateCartQuantity = () => {
+            const storedCart = getStoredCart();
+            const totalQuantity = storedCart.reduce((acc, product) => acc + product.quantity, 0);
+            setCartQuantity(totalQuantity);
+        };
+    
+        updateCartQuantity(); // Atualiza imediatamente ao carregar o componente
+        window.addEventListener("cartUpdated", updateCartQuantity);
+    
+        return () => {
+            window.removeEventListener("cartUpdated", updateCartQuantity);
+        };
+    }, []);
+    
 
     const updateUnderlinePosition = () => {
         if (activeItemRef.current) {
@@ -68,8 +83,8 @@ const Header: React.FC = () => {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg bg-white position-relative p-0">
-            <div className="container-fluid d-flex align-items-center">
+        <nav className="navbar navbar-expand-lg bg-white position-relative p-0 z-3">
+            <div className="container-fluid">
 
                 {/* Botão do Menu Mobile - Alinhado à Direita */}
                 <button
@@ -118,7 +133,15 @@ const Header: React.FC = () => {
                     <img src={logo} alt="logo" />
                 </Link>
 
-                <img src={cart} alt="cart"  className="shopping-cart"/>
+
+                <div className="shopping-cart-container position-relative">
+                    <img src={cart} alt="cart" className="shopping-cart" onClick={() => setIsOpen(!isOpen)} />
+                    {isOpen &&
+                        <div className="quantity-button position-absolute bottom-50  start-50 d-flex justify-content-center align-items-start">
+                            <span className="quantity-text">{cartQuantity}</span>
+                        </div>
+                    }
+                </div>
             </div>
         </nav>
     );

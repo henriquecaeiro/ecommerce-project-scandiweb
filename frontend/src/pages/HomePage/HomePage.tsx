@@ -9,6 +9,7 @@ import { useError } from "../../context/ErrorContext";
 import LoadProduct from "../../components/HomePage/LoadProducts";
 import useDelayedLoading from "../../hooks/useDelayedLoading";
 import { capitalizeFirst } from "../../utils/capitalizeFirst";
+import { useCart } from "../../context/CartContext";
 
 interface Product {
     id: number;
@@ -32,6 +33,7 @@ const HomePage: React.FC = () => {
     const { activeItem } = useCategory();
     const { finishLoading } = useLoading();
     const { setError } = useError();
+    const { isOpen } = useCart()
 
     const { loading, error, data } = useQuery<QueryResult>(GET_PRODUCTS, {
         variables: { category: activeItem },
@@ -51,6 +53,7 @@ const HomePage: React.FC = () => {
 
     return (
         <div className="container-fluid z-n1">
+            {isOpen && <div className="cart-active"></div>}
             <div className="row mt-5 ms-5">
                 <div className="col justify-content-start">
                     <h1 className="page-title">{capitalizeFirst(activeItem)}</h1>

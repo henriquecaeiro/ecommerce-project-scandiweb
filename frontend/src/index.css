@@ -1,14 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
 
-*{
+* {
     color: #1D1F22;
     font-family: 'Raleway', sans-serif;
 }
 
 .description p {
-    font-family:'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
-.carousel-btn > svg{
+.carousel-btn>svg {
     color: white !important;
+}
+
+.text-attribute-item p {
+    font-family: "Source Sans 3"
+}
+
+.total {
+    font-family: 'Roboto', sans-serif;
+}
+
+.quantity-button {
+    font-family: 'Roboto', sans-serif;
 }
