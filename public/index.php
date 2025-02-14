@@ -1,9 +1,9 @@
 <?php
 
-header("Access-Control-Allow-Origin: *"); // Permite todas as origens (pode ser ajustado para origens específicas)
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS"); // Métodos permitidos
-header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Cabeçalhos permitidos
-header("Access-Control-Max-Age: 86400"); // Tempo que o navegador pode cachear as permissões CORS
+header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS"); 
+header("Access-Control-Allow-Headers: Content-Type, Authorization"); 
+header("Access-Control-Max-Age: 86400"); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
