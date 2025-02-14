@@ -18,7 +18,7 @@ interface CategoryProviderType {
 }
 
 export const CategoryProvider: React.FC<CategoryProviderType> = ({ children }) => {
-    const [activeItem, setActiveItem] = useState<string>("All");
+    const [activeItem, setActiveItem] = useState<string>("all");
 
     return (
         <CategoryContext.Provider value={{ activeItem, setActiveItem }}>

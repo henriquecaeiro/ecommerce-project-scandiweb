@@ -24,13 +24,17 @@ class SwatchAttributeValue extends AbstractAttributeValue
     {
         try {
             // Prepare the SQL query to fetch swatch attribute values
-            $stmt = $this->db->prepare(
-            "SELECT attribute_values.display_value, attribute_values.value, attributes.name 
+            $stmt = $this->db->prepare("
+            SELECT 
+                attribute_values.id AS attribute_value_id, 
+                attribute_values.display_value, 
+                attribute_values.value, 
+                attributes.name 
             FROM attribute_values
             JOIN attributes ON attribute_values.attribute_id = attributes.id
             WHERE attribute_values.product_id = :product_id
-            AND attributes.type = 'swatch';"
-            );
+            AND attributes.type = 'swatch';
+            ");
 
             // Bind the product ID to the query
             $stmt->bindParam(':product_id', $productId);

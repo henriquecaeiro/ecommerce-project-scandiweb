@@ -5,6 +5,14 @@
     font-family: 'Raleway', sans-serif;
 }
 
+*::selection {
+    background: transparent;
+}
+
+*::-moz-selection {
+    background: transparent;
+}
+
 .description p {
     font-family: 'Roboto', sans-serif;
 }

@@ -46,6 +46,7 @@ This project is a base implementation for an e-commerce platform, created as par
 ### Directory Overview:
 ```
 project-root/
+├── frontend/
 ├── src/
 │   ├── Controllers/
 │   ├── Models/
@@ -67,6 +68,8 @@ project-root/
 ```
 
 ### Key Directories:
+- **frontend/**: Contains the whole structure for front-end logic
+- **Models/**: Represents database entities and 
 - **Controllers/**: Contains logic for handling business processes and delegating operations to models.
 - **Models/**: Represents database entities and contains data access logic.
 - **GraphQL/**: Manages the GraphQL schema, resolvers, and types for API operations.
@@ -222,6 +225,29 @@ Variables:
   "category": "product_category",
 }
 ```
+#### Fetch Single Products:
+```graphql
+  query GetProducts($category: String!, $id: String) {
+    products(category: $category, id: $id) {
+      id
+      name
+      in_stock
+      description
+      image_url
+      brand
+      category_name
+      price_amount
+      currency_label
+      currency_symbol
+    }
+  }`
+Variables:
+```json
+{
+  "category": "product_category",
+  "id": "product_id"
+}
+```
 
 #### Create Order:
 ```graphql
@@ -244,6 +270,72 @@ mutation CreateOrder {
 - **User-Friendly Messages**: Messages are designed to provide feedback without exposing sensitive details.
 
 ---
+
+## Front-End Overview
+
+This repository contains the **Front-End** portion of an e-commerce platform built with **React** and **TypeScript**, using **Apollo Client** for GraphQL integration. It provides a dynamic and responsive user interface for browsing products, managing the shopping cart, and placing orders. The front-end communicates with a PHP back-end that exposes a GraphQL API for data management.
+
+---
+
+## Key Front-End Features
+
+- **Dynamic Navigation**:  
+  The header displays a list of product categories fetched via GraphQL. It highlights the active category with an animated underline that adjusts based on screen size.
+
+- **Global Cart State**:  
+  The application uses React Context to manage the cart globally. Components like ProductList, ProductDetail, and CartOverlay share the same cart state, ensuring real-time updates when items are added, removed, or modified.
+
+- **GraphQL Integration**:  
+  Apollo Client is used to send queries and mutations to the back-end, manage caching, and handle errors.
+
+- **Responsive Design**:  
+  The UI adjusts dynamically to different screen sizes. For example, the navigation menu and the underline indicator update on window resize.
+
+---
+
+## Project Structure (Front-End)
+```
+project-root/ 
+├── apollo/ 
+│ ├── client.ts # Apollo Client configuration 
+│ └── queries/ # GraphQL queries for the front-end 
+├── assets/ # Images and other static files 
+├── components/ # Reusable React components (e.g., Header, CartOverlay) 
+├── context/ # Global state management using React Context 
+├── helpers/ # Utility functions and helper methods 
+├── hooks/ # Custom React hooks (e.g., useDelayedLoading) 
+├── interfaces/ # TypeScript interfaces for typed data models 
+├── pages/ # Main views/pages of the application 
+├── routes/ # Routing configuration using React Router 
+├── styles/ # Global and component-specific styles 
+├── App.tsx # Root-level component for layout and routing 
+├── index.css # Global CSS styles 
+├── main.tsx # Application entry point 
+```
+---
+
+## Key Technologies
+
+- **React & React Router**:  
+  For building the user interface and handling client-side routing.
+
+- **TypeScript**:  
+  Provides static typing for improved maintainability and developer experience.
+
+- **Apollo Client**:  
+  Manages GraphQL queries, mutations, caching, and error handling.
+
+- **Context API**:  
+  Used for global state management (e.g., cart, categories, error messages).
+
+---
+
+## Real-Time Data Synchronization
+
+The application relies on a global context (CartContext, CategoryContext, etc.) to manage and synchronize state across components. This means that when a product is added to the cart in one part of the app (e.g., ProductList), it immediately appears in all other components (e.g., ProductDetail and CartOverlay) that consume the cart state.
+
+---
+
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 

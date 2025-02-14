@@ -1,31 +1,32 @@
 import { useEffect, useState } from "react";
 
 /**
- * useDelayedLoading
- * Manages a delayed loading state, ensuring a minimum display time for loaders.
+ * Custom Hook: useDelayedLoading
+ * 
+ * This hook ensures that a loading state persists for a minimum display time 
+ * before disappearing, preventing flickering issues when loading completes too quickly.
  *
- * @param {boolean} loading - Indicates whether data is still being loaded.
- * @param {number} delay - Minimum time (in milliseconds) to show the loading state after loading is complete.
- * @returns {boolean} - A boolean indicating whether the loader should still be visible.
- *
+ * @param {boolean} loading - Indicates whether the data is still being loaded.
+ * @param {number} delay - Minimum time (in milliseconds) to keep the loading state visible.
+ * @returns {boolean} - Returns `true` if the loader should still be displayed.
  */
-const useDelayedLoading = (loading:boolean , delay:number) => {
+const useDelayedLoading = (loading: boolean, delay: number): boolean => {
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        let timer: number;
+        let timer: ReturnType<typeof setTimeout> | null = null;
 
         if (loading) {
-            setShowLoading(true); // Show the loader while loading is true
+            setShowLoading(true);
         } else {
-            // Wait for the delay before hiding the loader
             timer = setTimeout(() => {
                 setShowLoading(false);
             }, delay);
         }
 
-        // Clear the timer on cleanup to avoid memory leaks
-        return () => clearTimeout(timer);
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, [loading, delay]);
 
     return showLoading;

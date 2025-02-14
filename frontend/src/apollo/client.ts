@@ -1,11 +1,16 @@
 import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
-// Error handling link: Catches GraphQL and network errors globally
+/**
+ * Error handling link.
+ * Catches GraphQL and network errors globally and logs them to the console.
+ */
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      );
     });
   }
   if (networkError) {
@@ -13,14 +18,21 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// HTTP link: Specifies the GraphQL endpoint for API requests
+/**
+ * HTTP link.
+ * Specifies the GraphQL endpoint for API requests.
+ */
 const httpLink = new HttpLink({
-  uri: "http://localhost:8000/graphql", 
+  uri: import.meta.env.VITE_GRAPHQL_URI,
 });
 
-// Apollo Client setup: Combines all links and initializes caching
+
+/**
+ * Apollo Client instance.
+ * Combines the error and HTTP links and sets up an in-memory cache.
+ */
 const client = new ApolloClient({
-  link: from([errorLink, httpLink]), 
+  link: from([errorLink, httpLink]),
   cache: new InMemoryCache(),
 });
 
