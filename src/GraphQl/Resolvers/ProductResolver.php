@@ -38,8 +38,15 @@ class ProductResolver
     {
         // Extract arguments
         $category = $args['category'];
+        $id = $args['id'] ?? null;
+
+        // Create data array to send the arguments
+        $data = [
+            "type" => $category,
+            "id" => $id
+        ];
 
         // Delegate to the ProductController for logic
-        return  $this->controller->get($category);
+        return  $this->controller->get($data);
     }
 }

@@ -59,7 +59,10 @@ class QueryType extends ObjectType
                     // Arguments required for this quer
                     'args' => [
                         // The category to filter by (required)
-                        'category' => Type::nonNull(Type::string())
+                        'category' => Type::nonNull(Type::string()),
+
+                        // The product ID (optional)
+                        'id' => Type::string(),
                     ],
                     // Resolver to handle the query
                     'resolve' => [$productResolver, 'findAll'],
@@ -77,11 +80,11 @@ class QueryType extends ObjectType
                         'type' => Type::nonNull(Type::string())
                     ],
                     // Resolver to handle the query
-                    'resolve' => [$attributeResolver, 'findByType'], 
+                    'resolve' => [$attributeResolver, 'findByType'],
                 ],
             ],
         ];
-        
+
         // Passes the configuration to the parent constructor
         parent::__construct($config);
     }

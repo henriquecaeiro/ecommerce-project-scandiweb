@@ -33,6 +33,9 @@ class AttributeType extends ObjectType
 
                 // The actual value of the attribute
                 'value' => Type::string(),
+
+                //The atribute value id
+                'attribute_value_id' => Type::int(),
             ],
         ];
         

@@ -25,13 +25,17 @@ class TextAttributeValue extends AbstractAttributeValue
     {
         try {
             // Prepare the SQL query to fetch text attributes for the given product ID
-            $stmt = $this->db->prepare(
-                "SELECT attribute_values.display_value, attribute_values.value, attributes.name 
+            $stmt = $this->db->prepare("
+            SELECT 
+                attribute_values.id AS attribute_value_id, 
+                attribute_values.display_value, 
+                attribute_values.value, 
+                attributes.name 
             FROM attribute_values
             JOIN attributes ON attribute_values.attribute_id = attributes.id
             WHERE attribute_values.product_id = :product_id
-            AND attributes.type = 'text';"
-            );
+            AND attributes.type = 'text';
+            ");
 
             // Bind the product ID to the query
             $stmt->bindParam(':product_id', $productId);
