@@ -330,6 +330,18 @@ project-root/
 
 ---
 
+---
+
+## Environment Variables
+
+To use the API on the front-end, create a `.env` file in the project root and add the following variable:
+```
+VITE_GRAPHQL_URI=your_graphql_endpoint_url
+```
+This variable is used by the Apollo Client configuration to connect to the GraphQL API.
+
+---
+
 ## Real-Time Data Synchronization
 
 The application relies on a global context (CartContext, CategoryContext, etc.) to manage and synchronize state across components. This means that when a product is added to the cart in one part of the app (e.g., ProductList), it immediately appears in all other components (e.g., ProductDetail and CartOverlay) that consume the cart state.
