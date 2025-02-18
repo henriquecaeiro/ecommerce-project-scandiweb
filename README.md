@@ -253,11 +253,11 @@ Variables:
 ```graphql
 mutation CreateOrder {
   order(orderData: {
-    total_amount: 333.99,
-    product_id: "xbox-series-s",
-    quantity: 1,
-    amount: 333.99,
-    attribute_value_id: [16, 21]
+    total_amount: float,
+    product_id: "string",
+    quantity: number,
+    amount: float,
+    attribute_value_id: [array]
   })
 }
 ```
