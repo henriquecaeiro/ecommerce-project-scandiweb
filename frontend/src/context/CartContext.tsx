@@ -23,6 +23,7 @@ export const CartProvider: React.FC<CartProviderType> = ({ children }) => {
         text_selected: {},
     });
     const [cartItems, setCartItems] = useCartLocal("cart", []);
+      const [cartQuantity, setCartQuantity] = useState<number>(0);
 
     /**
      * Retrieves the stored cart from localStorage.
@@ -52,7 +53,7 @@ export const CartProvider: React.FC<CartProviderType> = ({ children }) => {
         };
 
     return (
-        <CartContext.Provider value={{ isOpen, setIsOpen, selectedAttributes, setSelectedAttributes, cartItems, setCartItems, saveCart, getStoredCart }}>
+        <CartContext.Provider value={{ isOpen, setIsOpen, selectedAttributes, setSelectedAttributes, cartItems, setCartItems, saveCart, getStoredCart, cartQuantity, setCartQuantity }}>
             {children}
         </CartContext.Provider>
     );

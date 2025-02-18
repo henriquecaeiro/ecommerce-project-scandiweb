@@ -18,7 +18,7 @@ import OrderCompleted from "./OrderCompleted";
  */
 const CartOverlay: React.FC = () => {
   // Context variables
-  const { isOpen, setIsOpen, cartItems, setCartItems, saveCart } = useCart();
+  const { isOpen, setIsOpen, cartItems, setCartItems, saveCart, cartQuantity } = useCart();
   // State to enable scrolling in the overlay after a delay.
   const [enableScroll, setEnableScroll] = useState<boolean>(false);
   // State to hold the total price of all items.
@@ -49,7 +49,7 @@ const CartOverlay: React.FC = () => {
       0
     );
     setTotalPrice(parseFloat(updatedPrice.toFixed(2)));
-  }, [cartItems]);
+  }, [cartItems])
 
   // Effect: Extract and group text & swatch attributes from cart items.
   useEffect(() => {
@@ -100,7 +100,7 @@ const CartOverlay: React.FC = () => {
             <div className="cart-header-container d-flex">
               <h4 className="cart-header">My bag, &nbsp;</h4>
               <p className="cart-total">
-                {cartItems.length} {cartItems.length !== 1 ? "items" : "item"}
+                {cartQuantity} {cartQuantity !== 1 ? "items" : "item"}
               </p>
             </div>
 

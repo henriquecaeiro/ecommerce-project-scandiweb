@@ -23,7 +23,7 @@ const Header: React.FC = () => {
   // Retrieve active category and its setter from CategoryContext.
   const { activeItem, setActiveItem } = useCategory();
   // Retrieve cart state from CartContext.
-  const { isOpen, setIsOpen, cartItems } = useCart();
+  const { isOpen, setIsOpen, cartItems, cartQuantity, setCartQuantity } = useCart();
   // Retrieve error setter from ErrorContext.
   const { setError } = useError();
 
@@ -42,8 +42,6 @@ const Header: React.FC = () => {
 
   // Local state for controlling the mobile menu open/closed.
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  // Local state for the total quantity of items in the cart.
-  const [cartQuantity, setCartQuantity] = useState<number>(0);
 
   // Use a custom hook to ensure the loading indicator is shown for at least 2.5 seconds.
   const showLoading = useDelayedLoading(loading, 2500);
@@ -172,7 +170,7 @@ const Header: React.FC = () => {
         {/* Shopping Cart Icon */}
         <div className="shopping-cart-container position-relative">
           <img src={cart} alt="cart" className="shopping-cart" onClick={() => setIsOpen(!isOpen)} data-testid='cart-btn' />
-          {isOpen && (
+          {(isOpen && cartQuantity > 0) && (
             <div className="quantity-button position-absolute bottom-50 start-50 d-flex justify-content-center align-items-start">
               <span className="quantity-text">{cartQuantity}</span>
             </div>
