@@ -40,8 +40,7 @@ class OrderResolver
             // Call the controller to save the order
             return $this->controller->save($args['orderData']);
         } catch (\Exception $e) {
-            // Log the error and return a failure message
-            error_log("Error creating order: " . $e->getMessage());
+            // Return a failure message
             return 'Failed to create order: ' . $e->getMessage();
         }
     }

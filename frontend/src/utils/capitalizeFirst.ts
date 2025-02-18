@@ -6,6 +6,6 @@
  * @returns {string} - The formatted string with the first letter capitalized.
  */
 export const capitalizeFirst = (str: string): string => {
-    if (!str.trim()) return ""; // Ensure string is not empty after trimming
+    if (!str.trim()) return ""; 
     return str.trim().charAt(0).toUpperCase() + str.trim().slice(1);
 };

@@ -142,9 +142,6 @@
     opacity: 0.5;
 }
 
-.out-of-stock{
-    left: 35%;
-}
 
 .carousel-btn.prev {
     left: 10px;
@@ -184,6 +181,7 @@
     .attributes-container {
         display: flex;
         flex-direction: row;
+        justify-content: center;
     }
 
     .price-header {

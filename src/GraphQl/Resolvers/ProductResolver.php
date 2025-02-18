@@ -36,17 +36,22 @@ class ProductResolver
      */
     public function findAll(mixed $root, array $args): array
     {
-        // Extract arguments
-        $category = $args['category'];
-        $id = $args['id'] ?? null;
+        try {
+            // Extract arguments
+            $category = $args['category'];
+            $id = $args['id'] ?? null;
 
-        // Create data array to send the arguments
-        $data = [
-            "type" => $category,
-            "id" => $id
-        ];
+            // Create data array to send the arguments
+            $data = [
+                "type" => $category,
+                "id" => $id
+            ];
 
-        // Delegate to the ProductController for logic
-        return  $this->controller->get($data);
+            // Delegate to the ProductController for logic
+            return  $this->controller->get($data);
+        } catch (\Exception $e) {
+            // Return a failure message
+            return 'Failed to create order: ' . $e->getMessage();
+        }
     }
 }

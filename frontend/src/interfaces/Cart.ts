@@ -72,7 +72,7 @@ export interface handleQuantityClickParams {
   /** The product ID for which the quantity should be updated. */
   productId: string;
   /** Action to perform: "add" to increase, "remove" to decrease quantity. */
-  action: "add" | "remove";
+  action: "ADD" | "REMOVE";
   /** The current array of cart items. */
   cartItems: CartItem[];
   /** Function to update the cart items. */

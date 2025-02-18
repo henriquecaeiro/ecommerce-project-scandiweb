@@ -27,7 +27,7 @@ export function handleQuantityClickHelper(params: handleQuantityClickParams): vo
     JSON.stringify(cartItem.swatch_selected) === JSON.stringify(selectedSwatch)
       ? {
           ...cartItem,
-          quantity: action === "add" ? cartItem.quantity + 1 : cartItem.quantity - 1,
+          quantity: action === "ADD" ? cartItem.quantity + 1 : cartItem.quantity - 1,
         }
       : cartItem
   )

@@ -67,17 +67,17 @@ class ImportService
         }
 
         try {
-            // Step 1: Import categories and retrieve their IDs
+            //Import categories and retrieve their IDs
             $categoryIds = $this->categoryController->importCategories($dataArray['data']['categories']);
 
-            // Step 2: Prepare and import products
+            //Prepare and import products
             $productData = [
                 'productsData' => $dataArray['data']['products'],
                 'categoryIds'  => $categoryIds,
             ];
             $productIds = $this->productController->save($productData);
 
-            // Step 3: Prepare and import attributes and their values
+            //Prepare and import attributes and their values
             $attributeData = [
                 'productsData' => $dataArray['data']['products'],
                 'productsIds'  => $productIds,
