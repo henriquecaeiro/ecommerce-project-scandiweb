@@ -44,7 +44,7 @@ class CategoryController extends QueryableController
         } catch (Exception $e) {
             // Log the detailed error message for debugging
             error_log("Error saving category '{$data['name']}': " . $e->getMessage());
-        
+
             // Display a user-friendly message
             throw new Exception($e->getMessage());
         }
@@ -79,7 +79,13 @@ class CategoryController extends QueryableController
      */
     public function get(mixed $id): array
     {
-        $categories = new Category($this->db);
-        return $categories->get($id);
+        try {
+            // Retrieving all categories
+            $categories = new Category($this->db);
+            return $categories->get($id);
+        } catch (Exception $e) {
+            // Log the detailed error message for debugging
+            error_log("Error while getting the categories " . $e->getMessage());
+        }
     }
 }

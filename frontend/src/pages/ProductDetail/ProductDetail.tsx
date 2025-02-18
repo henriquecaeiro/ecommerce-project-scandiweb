@@ -195,7 +195,7 @@ const ProductDetail: React.FC = () => {
                             {
                                 !productError || !swatchError || !textError ? (
                                     (Array.isArray(product?.image_url) && product.image_url.length > 1 ?
-                                        <div className="carousel-container ms-5 position-relative">
+                                        <div className="carousel-container ms-md-5 position-relative">
                                             <button className="carousel-btn prev d-flex align-items-center" onClick={() => {
                                                 if (product?.image_url) {
                                                     setActiveImageIndex(prevIndex => prevImageHelper(prevIndex, product.image_url.length));
@@ -224,7 +224,7 @@ const ProductDetail: React.FC = () => {
                                                 <img src={arrowRight} alt="arrow-right" />
                                             </button>
                                         </div> :
-                                        <div className="carousel-container ms-5 position-relative">
+                                        <div className="carousel-container ms-md-5 position-relative">
                                             <img
                                                 src={product?.image_url[activeImageIndex]}
                                                 alt={`${product?.name} ${activeImageIndex + 1}`}
@@ -263,16 +263,20 @@ const ProductDetail: React.FC = () => {
                             :
                             <div className="col-lg-5 col-md-12 product-details">
                                 <h1 className="product-name">{product?.name}</h1>
-                                <div className={`attributes-container ${textAttributeName && Object.entries(textAttributeName).length > 1 ? "multiple-attributes" : ""}`}>
+                                <div className={`attributes-container w-100 ${textAttributeName && Object.entries(textAttributeName).length > 1 ? "multiple-attributes" : ""}`}>
                                     <div className="row">
                                         {textAttributeName &&
                                             Object.entries(textAttributeName).map(([name, attributes], index, array) => (
                                                 (array.length > 1 ? (
-                                                    <div key={name} className={`col-lg-6 col-md-12 ${swatchAttributeName && Object.keys(swatchAttributeName).length > 0 ? "text-container" : ""}`}>
+                                                    <div key={name} 
+                                                    className={`col-lg-6 col-md-12 ${swatchAttributeName && Object.keys(swatchAttributeName).length > 0 ? "text-container" : ""}`}
+                                                    data-testid={`product-attribute-${name.toLowerCase().replace(/\s+/g, "-")}`}>
                                                         <AttributesSection title={name} attributes={attributes} multiple={true} />
                                                     </div>
                                                 ) : (
-                                                    <div key={name} className={`col-12 ${swatchAttributeName && Object.keys(swatchAttributeName).length > 0 ? "text-container" : ""}`}>
+                                                    <div key={name} 
+                                                    className={`col-12 ${swatchAttributeName && Object.keys(swatchAttributeName).length > 0 ? "text-container" : ""}`}
+                                                    data-testid={`product-attribute-${name.toLowerCase().replace(/\s+/g, "-")}`}>
                                                         <AttributesSection title={name} attributes={attributes} multiple={false} />
                                                     </div>
                                                 ))
@@ -281,11 +285,11 @@ const ProductDetail: React.FC = () => {
                                         {swatchAttributeName &&
                                             Object.entries(swatchAttributeName).map(([name, attributes], index, array) => (
                                                 (array.length > 1 ? (
-                                                    <div key={name} className="col-lg-6 col-md-12">
+                                                    <div key={name} className="col-lg-6 col-md-12" data-testid={`product-attribute-${name.toLowerCase().replace(/\s+/g, "-")}`}>
                                                         <AttributesSection title={name} attributes={attributes} multiple={true} />
                                                     </div>
                                                 ) : (
-                                                    <div key={name} className="col-12">
+                                                    <div key={name} className="col-12" data-testid={`product-attribute-${name.toLowerCase().replace(/\s+/g, "-")}`}>
                                                         <AttributesSection title={name} attributes={attributes} multiple={false} />
                                                     </div>
                                                 ))
@@ -298,7 +302,8 @@ const ProductDetail: React.FC = () => {
                                         <p className="price-header">PRICE:</p>
                                         <span className="price">{product?.currency_symbol}{product?.price_amount}</span>
                                     </div>
-                                    <button className={`${(product?.in_stock === 0 || !isAttibutesSelected) ? "disabled" : "shopping-button"}`}
+                                    <button
+                                        className={`${(product?.in_stock === 0 || !isAttibutesSelected) ? "disabled" : "shopping-button"}`}
                                         data-testid="add-to-cart"
                                         onClick={() => {
                                             if (isAttibutesSelected && product?.in_stock !== 0) {
@@ -315,7 +320,10 @@ const ProductDetail: React.FC = () => {
                                                 });
                                             }
                                         }}
-                                    >ADD TO CART</button>
+                                        disabled={product?.in_stock === 0 || !isAttibutesSelected}
+                                    >
+                                        ADD TO CART
+                                    </button>
                                 </div>
                                 {product?.description && (
                                     <div className="description mb-4" data-testid="product-description">{parse(product.description)}</div>

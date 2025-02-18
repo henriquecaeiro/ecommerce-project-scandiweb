@@ -15,43 +15,44 @@ import { Category } from "../../interfaces/Category";
 /**
  * Header Component
  *
- * Displays navigation categories fetched from the server.
- * Handles loading states with a delay for a smoother user experience.
- * Also displays the logo and the shopping cart icon with the current cart quantity.
+ * Displays navigation categories fetched from the server,
+ * a logo, and a shopping cart icon with the current cart quantity.
+ * Also manages an animated underline that tracks the active navigation link.
  */
 const Header: React.FC = () => {
-  // Get active category and updater from CategoryContext.
+  // Retrieve active category and its setter from CategoryContext.
   const { activeItem, setActiveItem } = useCategory();
-  // Access cart-related state from CartContext.
+  // Retrieve cart state from CartContext.
   const { isOpen, setIsOpen, cartItems } = useCart();
-  // Access error updater from ErrorContext.
+  // Retrieve error setter from ErrorContext.
   const { setError } = useError();
 
   // Fetch categories from GraphQL.
   const { loading, error, data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
 
-  // State to store the style (position and dimensions) for the active underline.
+  // State to store the style (left, width, top) for the underline.
   const [underlineStyle, setUnderlineStyle] = useState<{ left: string; width: string; top: string }>({
     left: "0px",
     width: "0px",
-    top: "0px", 
+    top: "0px", // This will be updated after the active item renders.
   });
 
-  // Create a ref to hold the active navigation link element.
+  // Create a ref to hold the DOM element of the active navigation link.
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
+
   // Local state for controlling the mobile menu open/closed.
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   // Local state for the total quantity of items in the cart.
   const [cartQuantity, setCartQuantity] = useState<number>(0);
 
-  // Use a custom hook to ensure the loading indicator shows for at least 2.5 seconds.
+  // Use a custom hook to ensure the loading indicator is shown for at least 2.5 seconds.
   const showLoading = useDelayedLoading(loading, 2500);
 
   /**
    * updateUnderlinePosition
-   * Calculates and sets the underline's position and width based on the active item.
-   * For mobile (width <= 992px), it uses the element's offsetTop plus offsetHeight plus a small margin.
-   * Otherwise, a default top value of "80px" is used.
+   * Calculates and sets the underline's position and dimensions based on the active navigation element.
+   * For mobile (window.innerWidth <= 992), the top position is adjusted using the element's offsetTop and offsetHeight.
+   * Otherwise, it defaults to "80px".
    */
   const updateUnderlinePosition = () => {
     if (activeItemRef.current) {
@@ -60,11 +61,15 @@ const Header: React.FC = () => {
       if (window.innerWidth <= 992) {
         underlineTop = `${offsetTop + offsetHeight + 5}px`;
       }
-      setUnderlineStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px`, top: underlineTop });
+      setUnderlineStyle({
+        left: `${offsetLeft}px`,
+        width: `${offsetWidth}px`,
+        top: underlineTop,
+      });
     }
   };
 
-  // When loading is finished and categories are loaded, update the underline style.
+  // Update underline style when loading is finished and the active element is available.
   useEffect(() => {
     if (!loading && data?.categories.length && activeItemRef.current) {
       const { offsetLeft, offsetWidth } = activeItemRef.current;
@@ -73,12 +78,11 @@ const Header: React.FC = () => {
     }
   }, [showLoading]);
 
-  // Set default active item to the first category when categories load.
+  // Set default active category (if none is set) and add a resize listener to update the underline position.
   useEffect(() => {
     if (data?.categories.length && !activeItem) {
       setActiveItem(data.categories[0].name);
     }
-    // Add a resize listener to update underline position when window resizes.
     const handleResize = () => {
       updateUnderlinePosition();
     };
@@ -88,7 +92,7 @@ const Header: React.FC = () => {
     };
   }, [data, activeItem, setActiveItem]);
 
-  // If there's an error fetching categories, update error state.
+  // If there's an error fetching categories, update the error state.
   useEffect(() => {
     if (error) {
       setError(true);
@@ -106,12 +110,12 @@ const Header: React.FC = () => {
     updateUnderlinePosition();
   }, [isMenuOpen]);
 
-  // Recalculate underline position after the active item changes.
+  // Update underline position when the active category changes.
   useLayoutEffect(() => {
     updateUnderlinePosition();
   }, [activeItem]);
 
-  // If still loading, show the loading screen.
+  // If the loading delay is still active, render the LoadingScreen.
   if (showLoading) {
     return <LoadingScreen />;
   }
@@ -119,7 +123,7 @@ const Header: React.FC = () => {
   return (
     <nav className="navbar navbar-expand-lg bg-white position-relative p-0 z-3">
       <div className="container-fluid">
-        {/* Mobile menu toggler */}
+        {/* Mobile Menu Toggler */}
         <button
           className="navbar-toggler me-auto"
           type="button"
@@ -133,14 +137,13 @@ const Header: React.FC = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Navigation links */}
+        {/* Navigation Links */}
         <div className="collapse navbar-collapse mobile-menu" id="navbarNavAltMarkup">
           <div className="navbar-nav">
             {data?.categories.map((category, index) => (
               <Link
                 key={`${category.name}-${index}`}
-                to="/"
-                // Attach ref if this category is active
+                to={`/${category.name.toLowerCase()}`}
                 ref={activeItem === category.name ? activeItemRef : null}
                 className={`nav-link text-uppercase d-flex justify-content-center align-items-center px-3 ${
                   activeItem === category.name ? "active-item" : ""
@@ -151,7 +154,7 @@ const Header: React.FC = () => {
                 {category.name}
               </Link>
             ))}
-            {/* Underline element positioned based on active item */}
+            {/* Underline element that tracks the active navigation link */}
             {activeItem && (
               <span
                 className={`active-underline position-absolute ${isMenuOpen ? "show" : "hide"}`}
@@ -161,14 +164,14 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Logo in the center */}
-        <Link to="/" className="navbar-brand mx-auto position-absolute start-50 translate-middle-x">
+        {/* Logo centered in the header */}
+        <Link to={`/${activeItem}`} className="navbar-brand mx-auto position-absolute start-50 translate-middle-x">
           <img src={logo} alt="logo" />
         </Link>
 
-        {/* Shopping cart icon with quantity badge */}
+        {/* Shopping Cart Icon */}
         <div className="shopping-cart-container position-relative">
-          <img src={cart} alt="cart" className="shopping-cart" onClick={() => setIsOpen(!isOpen)} />
+          <img src={cart} alt="cart" className="shopping-cart" onClick={() => setIsOpen(!isOpen)} data-testid='cart-btn' />
           {isOpen && (
             <div className="quantity-button position-absolute bottom-50 start-50 d-flex justify-content-center align-items-start">
               <span className="quantity-text">{cartQuantity}</span>

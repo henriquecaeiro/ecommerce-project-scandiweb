@@ -68,11 +68,12 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
+        width: 100%;
     }
 
     .multiple {
         align-items: center;
-        justify-content: start;
+        justify-content: center;
     }
 
     .multiple:first-child {

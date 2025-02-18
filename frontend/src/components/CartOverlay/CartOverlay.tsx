@@ -77,11 +77,11 @@ const CartOverlay: React.FC = () => {
   }, [cartItems]);
 
   useEffect(() => {
-    
+
     if (!showLoading) {
       setIsOpen(false)
     }
-    
+
   }, [showLoading])
 
   return (
@@ -90,211 +90,214 @@ const CartOverlay: React.FC = () => {
       <div className={`cart-backdrop ${isOpen ? "show" : "hide"}`}></div>
 
       {/* Main cart overlay container */}
-      <div className={`cart-container ${isOpen ? "show" : "hide"} ${enableScroll ? "apply-scroll" : ""} z-3`}>
-        <div>
-          {showLoading ?
-            <OrderCompleted  loading={loading} /> :
-            <>
-              {/* Header displaying bag title and item count */}
-              <div className="cart-header-container d-flex">
-                <h4 className="cart-header">My bag, &nbsp;</h4>
-                <p className="cart-total">
-                  {cartItems.length} {cartItems.length !== 1 ? "items" : "item"}
-                </p>
-              </div>
+      <div className={`cart-container ${isOpen ? "show" : "hide"} ${enableScroll ? "apply-scroll" : ""} z-3`}
+        data-testid='cart-overlay'>
 
-              {/* Render each cart item */}
-              {cartItems.map((cartItem, index) => (
-                <div
-                  key={`${cartItem.product.id}-${index}`}
-                  className="cart-item row position-relative"
-                >
-                  {/* Product details and attributes */}
-                  <div className="cart-product-details p-0 d-flex flex-column col-6">
-                    <div className="product-item-container">
-                      <p className="cart-item-name">{cartItem.product.name}</p>
-                      <span className="cart-item-price">
-                        {cartItem.product.currency_symbol}
-                        {cartItem.product.price_amount}
-                      </span>
-                    </div>
+        {showLoading ?
+          <OrderCompleted loading={loading} /> :
+          <>
+            {/* Header displaying bag title and item count */}
+            <div className="cart-header-container d-flex">
+              <h4 className="cart-header">My bag, &nbsp;</h4>
+              <p className="cart-total">
+                {cartItems.length} {cartItems.length !== 1 ? "items" : "item"}
+              </p>
+            </div>
 
-                    {/* Display Text Attributes if available */}
-                    {cartItem.text_attributes.length > 0 && (
-                      <div className="text-container">
-                        {Object.entries(textAttributes).map(([name, values]) => {
-                          const kebabName = name.toLowerCase().replace(/\s+/g, "-");
-
-                          const filteredValues = values
-                            .filter((item) => item.product === cartItem.product.name)
-                            .reduce((acc, curr) => {
-                              if (!acc.some((attr) => attr.value === curr.value)) {
-                                acc.push(curr);
-                              }
-                              return acc;
-                            }, [] as typeof values);
-
-                          const selectedValues = Object.keys(cartItem.text_selected).flatMap((key) =>
-                            filteredValues.filter(
-                              (item) =>
-                                item.name === key &&
-                                item.value === cartItem.text_selected[key]
-                            )
-                          );
-                          
-                          return (
-                            filteredValues.length > 0 && (
-                              <div key={name} data-testid={`cart-item-attribute-${kebabName}`}>
-                                <p className="cart-item-text-header">{name}:</p>
-                                <div className="attribute-items-container d-flex">
-                                  {filteredValues.map((item, idx) => (
-                                    <div
-                                      key={`${cartItem.product.id}-text-${item.value}-${idx}`}
-                                      className={`text-attribute-item d-flex justify-content-center align-items-center ${selectedValues.some((selectedItem) => selectedItem.value === item.value)
-                                        ? "text-selected"
-                                        : ""
-                                        } ${idx < filteredValues.length - 1 ? "text-margin" : ""}`}
-                                      data-testid={
-                                        selectedValues.some((selectedItem) => selectedItem.value === item.value)
-                                          ? `cart-item-attribute-${kebabName}-${item.value}-selected`
-                                          : `cart-item-attribute-${kebabName}-${item.value}`
-                                      }
-                                    >
-                                      <p className="text-attribute-value m-0">{item.value}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Display Swatch Attributes if available */}
-                    {cartItem.swatch_attributes.length > 0 && (
-                      <div className="swatch-container">
-                        {Object.entries(swatchAttributes).map(([name, values]) => {
-                          const filteredValues = values
-                            .filter((item) => item.product === cartItem.product.name)
-                            .reduce((acc, curr) => {
-                              if (!acc.some((attr) => attr.value === curr.value)) {
-                                acc.push(curr);
-                              }
-                              return acc;
-                            }, [] as typeof values);
-                         
-                          return (
-                            filteredValues.length > 0 && (
-                              <div key={name}>
-                                <p className="cart-item-swatch-header">{name}:</p>
-                                <div className="swatch-items-container d-flex align-items-center">
-                                  {filteredValues.map((item, idx) => (
-                                    <div
-                                      key={`${cartItem.product.id}-swatch-${item.value}-${idx}`}
-                                      className={`swatch-attribute-item ${Object.values(cartItem.swatch_selected ?? {}).includes(item.value)
-                                        ? "swatch-selected"
-                                        : ""
-                                        } ${idx < filteredValues.length - 1 ? "swatch-margin" : ""}`}
-                                    >
-                                      <div
-                                        className={`swatch-item ${item.value === "#FFFFFF" ? "swatch-border-item" : ""}`}
-                                        style={{ backgroundColor: item.value }}
-                                      ></div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Display message if no attributes are available */}
-                    {cartItem.text_attributes.length === 0 && cartItem.swatch_attributes.length === 0 && (
-                      <>
-                        <p className="cart-item-no-attributes-header">No attributes available:</p>
-                        <div className="no-items-container d-flex align-items-center justify-content-center">
-                          <FaBox className="no-attributes-icon" />
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Quantity Controls */}
-                  <div className="quantity-container d-flex flex-column justify-content-between align-items-center col-2">
-                    <div
-                      className="quantity-item-container d-flex align-items-center justify-content-center z-3"
-                      onClick={() =>
-                        handleQuantityClickHelper({ 
-                          productId: cartItem.product.id, 
-                          action: "add", 
-                          cartItems, 
-                          setCartItems, 
-                          selectedText: cartItem.text_selected ?? {},
-                          selectedSwatch: cartItem.swatch_selected ?? {}
-                        })
-                      }
-                      data-testid="cart-item-amount-increase"
-                    >
-                      <FaPlus />
-                    </div>
-                    <span className="quantity" data-testid="cart-item-amount">
-                      {cartItem.quantity}
+            {/* Render each cart item */}
+            {cartItems.map((cartItem, index) => (
+              <div
+                key={`${cartItem.product.id}-${index}`}
+                className="cart-item row position-relative d-flex "
+              >
+                {/* Product details and attributes */}
+                <div className="cart-product-details d-flex flex-column col-4 col-sm-6">
+                  <div className="product-item-container">
+                    <p className="cart-item-name">{cartItem.product.name}</p>
+                    <span className="cart-item-price">
+                      {cartItem.product.currency_symbol}
+                      {cartItem.product.price_amount}
                     </span>
-                    <div
-                      className="quantity-item-container d-flex align-items-center justify-content-center z-3"
-                      onClick={() =>
-                        handleQuantityClickHelper({ 
-                          productId: cartItem.product.id, 
-                          action: "remove", 
-                          cartItems, 
-                          setCartItems, 
-                          selectedText: cartItem.text_selected ?? {},
-                          selectedSwatch: cartItem.swatch_selected ?? {}
-                        })
-                      }
-                      
-                      data-testid="cart-item-amount-decrease"
-                    >
-                      <FaMinus />
-                    </div>
                   </div>
 
-                  {/* Product Image */}
+                  {/* Display Text Attributes if available */}
+                  {cartItem.text_attributes.length > 0 && (
+                    <div className="text-container">
+                      {Object.entries(textAttributes).map(([name, values]) => {
+                        const kebabName = name.toLowerCase().replace(/\s+/g, "-");
+
+                        const filteredValues = values
+                          .filter((item) => item.product === cartItem.product.name)
+                          .reduce((acc, curr) => {
+                            if (!acc.some((attr) => attr.value === curr.value)) {
+                              acc.push(curr);
+                            }
+                            return acc;
+                          }, [] as typeof values);
+
+                        const selectedValues = Object.keys(cartItem.text_selected).flatMap((key) =>
+                          filteredValues.filter(
+                            (item) =>
+                              item.name === key &&
+                              item.value === cartItem.text_selected[key]
+                          )
+                        );
+
+                        return (
+                          filteredValues.length > 0 && (
+                            <div key={name} data-testid={`cart-item-attribute-${kebabName}`}>
+                              <p className="cart-item-text-header">{name}:</p>
+                              <div className="attribute-items-container d-flex">
+                                {filteredValues.map((item, idx) => (
+                                  <div
+                                    key={`${cartItem.product.id}-text-${item.value}-${idx}`}
+                                    className={`text-attribute-item d-flex justify-content-center align-items-center ${selectedValues.some((selectedItem) => selectedItem.value === item.value)
+                                      ? "text-selected"
+                                      : ""
+                                      } ${idx < filteredValues.length - 1 ? "text-margin" : ""}`}
+                                    data-testid={
+                                      selectedValues.some((selectedItem) => selectedItem.value === item.value)
+                                        ? `cart-item-attribute-${kebabName}-${item.value}-selected`
+                                        : `cart-item-attribute-${kebabName}-${item.value}`
+                                    }
+                                  >
+                                    <p className="text-attribute-value m-0">{item.value}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Display Swatch Attributes if available */}
+                  {cartItem.swatch_attributes.length > 0 && (
+                    <div className="swatch-container">
+                      {Object.entries(swatchAttributes).map(([name, values]) => {
+                        const filteredValues = values
+                          .filter((item) => item.product === cartItem.product.name)
+                          .reduce((acc, curr) => {
+                            if (!acc.some((attr) => attr.value === curr.value)) {
+                              acc.push(curr);
+                            }
+                            return acc;
+                          }, [] as typeof values);
+
+                        return (
+                          filteredValues.length > 0 && (
+                            <div key={name}>
+                              <p className="cart-item-swatch-header">{name}:</p>
+                              <div className="swatch-items-container d-flex align-items-center">
+                                {filteredValues.map((item, idx) => (
+                                  <div
+                                    key={`${cartItem.product.id}-swatch-${item.value}-${idx}`}
+                                    className={`swatch-attribute-item ${Object.values(cartItem.swatch_selected ?? {}).includes(item.value)
+                                      ? "swatch-selected"
+                                      : ""
+                                      } ${idx < filteredValues.length - 1 ? "swatch-margin" : ""}`}
+                                  >
+                                    <div
+                                      className={`swatch-item ${item.value === "#FFFFFF" ? "swatch-border-item" : ""}`}
+                                      style={{ backgroundColor: item.value }}
+                                    ></div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Display message if no attributes are available */}
+                  {cartItem.text_attributes.length === 0 && cartItem.swatch_attributes.length === 0 && (
+                    <>
+                      <p className="cart-item-no-attributes-header">No attributes available:</p>
+                      <div className="no-items-container d-flex align-items-center justify-content-center">
+                        <FaBox className="no-attributes-icon" />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Quantity Controls */}
+                <div className="quantity-container d-flex flex-column justify-content-between align-items-center  col-2">
+                  <div
+                    className="quantity-item-container d-flex align-items-center justify-content-center z-3"
+                    onClick={() =>
+                      handleQuantityClickHelper({
+                        productId: cartItem.product.id,
+                        action: "ADD",
+                        cartItems,
+                        setCartItems,
+                        selectedText: cartItem.text_selected ?? {},
+                        selectedSwatch: cartItem.swatch_selected ?? {}
+                      })
+                    }
+                    data-testid="cart-item-amount-increase"
+                  >
+                    <FaPlus />
+                    <span className="visually-hidden">ADD</span>
+                  </div>
+                  <span className="quantity" data-testid="cart-item-amount">
+                    {cartItem.quantity}
+                  </span>
+                  <div
+                    className="quantity-item-container d-flex align-items-center justify-content-center z-3"
+                    onClick={() =>
+                      handleQuantityClickHelper({
+                        productId: cartItem.product.id,
+                        action: "REMOVE",
+                        cartItems,
+                        setCartItems,
+                        selectedText: cartItem.text_selected ?? {},
+                        selectedSwatch: cartItem.swatch_selected ?? {}
+                      })
+                    }
+
+                    data-testid="cart-item-amount-decrease"
+                  >
+                    <FaMinus />
+                    <span className="visually-hidden">ADD</span>
+                  </div>
+                </div>
+
+                {/* Product Image */}
+                <div className="col-6 col-sm-4 p-0 w-auto">
                   <img
                     src={cartItem.product.image_url[0]}
                     alt={cartItem.product.name}
-                    className="product-image p-0 col-4"
+                    className="product-image p-0"
                   />
                 </div>
-              ))}
-
-              {/* Total Price Section */}
-              <div className="total-container d-flex">
-                <h4 className="total w-50">Total</h4>
-                <h4 className="total-price w-50 text-end" data-testid="cart-total">
-                  ${totalPrice}
-                </h4>
               </div>
-            </>
-          }
-          {/* Place Order Button */}
-          <div className="button-div d-flex justify-content-center align-items-center">
-            <button
-              className={`${cartItems.length === 0 ? "disabled" : "cart-button p-0"}`}
-              data-testid="add-to-cart"
-              onClick={() => {
-                if (cartItems.length !== 0) {
-                  handleOrder({ orderItens: cartItems, createOrder, saveCart: (cart: CartItem[]) => saveCart(cart, "cart") }
-                  )
-                }
-              }}
-            >
-              PLACE ORDER
-            </button>
-          </div>
+            ))}
+
+            {/* Total Price Section */}
+            <div className="total-container d-flex">
+              <h4 className="total w-50">Total</h4>
+              <h4 className="total-price w-50 text-end" data-testid="cart-total">
+                ${totalPrice}
+              </h4>
+            </div>
+          </>
+        }
+        {/* Place Order Button */}
+        <div className="button-div d-flex justify-content-center align-items-center">
+          <button
+            className={`${cartItems.length === 0 ? "disabled" : "cart-button p-0"}`}
+            onClick={() => {
+              if (cartItems.length !== 0) {
+                handleOrder({ orderItens: cartItems, createOrder, saveCart: (cart: CartItem[]) => saveCart(cart, "cart") }
+                )
+              }
+            }}
+          >
+            PLACE ORDER
+          </button>
         </div>
       </div>
     </>

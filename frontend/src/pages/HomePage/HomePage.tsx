@@ -55,14 +55,14 @@ const HomePage: React.FC = () => {
             {isOpen && <div className="cart-active"></div>}
 
             {/* Page Title */}
-            <div className="row mt-5 ms-5">
+            <div className="row mt-5 ms-lg-5 ms-3">
                 <div className="col justify-content-start">
                     <h1 className="page-title">{capitalizeFirst(activeItem)}</h1>
                 </div>
             </div>
 
             {/* Product Listing */}
-            <div className="row mt-5 ms-5 g4">
+            <div className="row mt-5 g4 d-flex justify-content-center">
                 {showLoading && <LoadProduct />}
                 {!showLoading &&
                     data?.products?.map((product) => (

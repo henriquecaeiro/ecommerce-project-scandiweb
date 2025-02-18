@@ -52,10 +52,7 @@ class OrderItemAttributeValues extends BaseModel
             // Return success message
             return 'Order item attribute values saved successfully.';
         } catch (PDOException $e) {
-            // Log the error for debugging purposes
-            error_log("Error saving order item attribute values: " . $e->getMessage());
-            
-            // Re-throw the exception to be handled by upper layers
+            // Throw the exception to be handled by upper layers
             throw new PDOException("Error saving order item attribute values: " . $e->getMessage());
         }
     }

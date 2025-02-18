@@ -29,7 +29,7 @@ const ProductList: React.FC<{ product: Product }> = ({ product }) => {
   const [imageError, setImageError] = useState<boolean>(false);
 
   // Context variables for handling the cart stored in localStorage.
-  const {getStoredCart, saveCart} = useCart();
+  const { getStoredCart, saveCart } = useCart();
 
   // Fetch "text" attributes for the product via GraphQL.
   const { loading: textLoading, error: textError, data: textData } =
@@ -47,12 +47,11 @@ const ProductList: React.FC<{ product: Product }> = ({ product }) => {
 
   return (
     <div
-      className={`col-md-4 product-container my-5 d-flex flex-column align-items-center ${
-        product.id === selectedProductId ? "selected" : ""
-      }`}
+      className={`col-sm-6 col-lg-4 product-container my-5 d-flex flex-column align-items-center ${product.id === selectedProductId ? "selected" : ""
+        }`}
       onMouseEnter={() => handleMouseEnterHelper(product.id, selectedProductId, setSelectedProductId)}
       onMouseLeave={() => handleMouseEnterHelper(null, selectedProductId, setSelectedProductId)}
-      data-testid={`product-${product.id}`}
+      data-testid={`product-${product.name.toLowerCase().replace(/\s+/g, "-")}`}
     >
       <Link to={`/details/${product.id}`} className="text-decoration-none text-dark">
         <div className="productImage-size mt-4 position-relative d-flex justify-content-center">
@@ -69,7 +68,7 @@ const ProductList: React.FC<{ product: Product }> = ({ product }) => {
           )}
           {product.in_stock === 0 && (
             <>
-              <span className="out-of-stock position-absolute">OUT OF STOCK</span>
+              <span className="out-of-stock position-absolute top-50">OUT OF STOCK</span>
               <div className="bg-out position-absolute bottom-0 h-100 w-100"></div>
             </>
           )}

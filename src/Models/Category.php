@@ -84,12 +84,15 @@ class Category extends QueryableModel
             $stmt = $this->db->query("SELECT * FROM categories");
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+            // If the data was not fetched throw an exception
             if ($result === false) {
                 throw new RuntimeException("Failed to fetch data from table categories");
             }
 
+            // Return the categories
             return $result;
         } catch (Exception $e) {
+             // if any eror occur throw a new exception with additional context
             throw new RuntimeException("Error in QueryableModel::get: " . $e->getMessage());
         }
     }

@@ -275,6 +275,8 @@ mutation CreateOrder {
 
 This repository contains the **Front-End** portion of an e-commerce platform built with **React** and **TypeScript**, using **Apollo Client** for GraphQL integration. It provides a dynamic and responsive user interface for browsing products, managing the shopping cart, and placing orders. The front-end communicates with a PHP back-end that exposes a GraphQL API for data management.
 
+**Live Project URL:** [https://truthful-respect-production-c10c.up.railway.app/](https://truthful-respect-production-c10c.up.railway.app/)
+
 ---
 
 ## Key Front-End Features

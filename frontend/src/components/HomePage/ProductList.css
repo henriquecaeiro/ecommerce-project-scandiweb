@@ -16,8 +16,6 @@
 .out-of-stock {
     width: 173px;
     height: 39px;
-    top: 146px;
-    left: 20%;
     font-size: 24px;
     font-weight: 400;
     color: #8D8F9A;
@@ -46,7 +44,7 @@
 
 .product-price {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 28.8px; 
 }
 
@@ -60,4 +58,10 @@
 div .cart {
     width: 24px;
     height: 24px;
+}
+
+@media (max-width: 575px) {
+    .product-container {
+        width: 100%;
+    }
 }

@@ -76,37 +76,40 @@ const AttributesSection: React.FC<AttributeProps> = ({
   return (
     <div
       className={`attribute-div d-flex ${multiple ? "multiple" : "single"}`}
-      data-testid={`product-attribute-${title.toLowerCase().replace(/\s+/g, "-")}`}
     >
       <h2 className="attribute-title">{title}:</h2>
-      <div className="attribute-items d-flex">
+      <div className="attribute-items d-flex"
+      >
         {attributes.map((attribute, index) =>
           attribute.name === "Color" ? (
+           /*  Swatch Attributes */
             <div
               key={`${attribute.name}-${attribute.value}-${index}`} 
-              className={`me-2 ${index === selectedIndex ? "item-selected" : ""
-                }`}
+              className={`me-2 ${index === selectedIndex ? "item-selected" : ""}`}
             >
               <div
-                className={`attribute-item ${index === selectedIndex ? "attribute-margin" : ""
-                  } ${attribute.value === "#FFFFFF" ? "border-item" : ""
-                  }`}
+                className={`attribute-item ${index === selectedIndex ? "attribute-margin" : ""} 
+                ${attribute.value === "#FFFFFF" ? "border-item" : ""}`}
                 onClick={() =>
                   handleSelected(index, attribute.name, attribute.value, attribute.attribute_value_id, "swatch_selected")
                 }
                 style={{ backgroundColor: attribute.value }}
+                data-testid={`product-attribute-${title.toLowerCase().replace(/\s+/g, "-")}-${attribute.value}`}
               />
             </div>
           ) : (
+            /* Text Attributes */
             <div
               key={`${attribute.name}-${attribute.value}-${index}`} 
-              className={`attribute-text-container d-flex justify-content-center align-items-center me-2 ${index === selectedIndex ? "attribute-selected" : ""
-                }`}
+              className={`attribute-text-container d-flex justify-content-center align-items-center me-2 
+                ${index === selectedIndex ? "attribute-selected" : "" }`}
               onClick={() =>
                 handleSelected(index, attribute.name, attribute.value, attribute.attribute_value_id, "text_selected")
               }
             >
-              <p className="attribute-text m-0">{attribute.value}</p>
+              <p className="attribute-text m-0"
+               data-testid={`product-attribute-${title.toLowerCase().replace(/\s+/g, "-")}-${attribute.value}`}
+              >{attribute.value}</p>
             </div>
           )
         )}

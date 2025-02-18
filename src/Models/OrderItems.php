@@ -54,8 +54,7 @@ class OrderItems extends BaseModel
             // Return the ID of the saved order item
             return (int)$this->db->lastInsertId();
         } catch (PDOException $e) {
-            // Log and rethrow the error for further handling
-            error_log("Error saving order item: " . $e->getMessage());
+            // Throw the error for further handling
             throw new PDOException("Error saving order item: " . $e->getMessage());
         }
     }

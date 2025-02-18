@@ -45,6 +45,7 @@ class SwatchAttributeValue extends AbstractAttributeValue
             // Fetch and return the results as an associative array
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
+            // Throw the exception to be handled by upper layers
             throw new RuntimeException("Error in SSwatchAttributeValue::get: " . $e->getMessage());
         }
     }

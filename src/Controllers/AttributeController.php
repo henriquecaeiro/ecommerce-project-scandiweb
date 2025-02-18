@@ -97,7 +97,8 @@ class AttributeController extends BaseController
      */
     public function getAttributeValue(string $productId, string $type): array
     {
-        // Create the appropriate attribute value object based on type
+        try {
+                    // Create the appropriate attribute value object based on type
         $attributeValue = AttributeValueFactory::create(
             $this->db,
             $type,
@@ -105,5 +106,9 @@ class AttributeController extends BaseController
 
         // Retrieve and return the attribute values
         return $attributeValue->get($productId);
+        } catch (Exception $e) {
+            // Log the detailed error message for debugging
+            error_log("Error while getting the attribute_values: " . $e->getMessage());
+        }
     }
 }
