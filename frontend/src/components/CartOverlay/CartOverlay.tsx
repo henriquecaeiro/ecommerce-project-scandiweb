@@ -99,7 +99,7 @@ const CartOverlay: React.FC = () => {
             {/* Header displaying bag title and item count */}
             <div className="cart-header-container d-flex">
               <h4 className="cart-header">My bag, &nbsp;</h4>
-              <p className="cart-total">
+              <p className="cart-total" data-testid="cart-total-text">
                 {cartQuantity} {cartQuantity !== 1 ? "items" : "item"}
               </p>
             </div>
@@ -238,9 +238,9 @@ const CartOverlay: React.FC = () => {
                       })
                     }
                     data-testid="cart-item-amount-increase"
+                    aria-label="ADD"
                   >
                     <FaPlus />
-                    <span className="visually-hidden">ADD</span>
                   </div>
                   <span className="quantity" data-testid="cart-item-amount">
                     {cartItem.quantity}
@@ -259,9 +259,10 @@ const CartOverlay: React.FC = () => {
                     }
 
                     data-testid="cart-item-amount-decrease"
+                    aria-label="REMOVE"
                   >
                     <FaMinus />
-                    <span className="visually-hidden">ADD</span>
+                    <span className="visually-hidden">REMOVE</span>
                   </div>
                 </div>
 
