@@ -86,8 +86,9 @@ const ProductList: React.FC<{ product: Product }> = ({ product }) => {
                   (cart: CartItem[]) => saveCart(cart, "cart")
                 )
               }
+                aria-label="ADD"
             >
-              <img src={cart} alt="cart" />
+              <img src={cart} alt="cart"/>
             </span>
           )}
         </div>

@@ -63,6 +63,10 @@ export interface CartContextType {
    * @returns An array of CartItem.
    */
   getStoredCart: (key: string) => CartItem[];
+  /** The quantity of items in the cart. */
+  cartQuantity: number;
+  /** Function to update the cart quantity. */
+  setCartQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 
 /**

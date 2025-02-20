@@ -18,7 +18,7 @@ import OrderCompleted from "./OrderCompleted";
  */
 const CartOverlay: React.FC = () => {
   // Context variables
-  const { isOpen, setIsOpen, cartItems, setCartItems, saveCart } = useCart();
+  const { isOpen, setIsOpen, cartItems, setCartItems, saveCart, cartQuantity } = useCart();
   // State to enable scrolling in the overlay after a delay.
   const [enableScroll, setEnableScroll] = useState<boolean>(false);
   // State to hold the total price of all items.
@@ -49,7 +49,7 @@ const CartOverlay: React.FC = () => {
       0
     );
     setTotalPrice(parseFloat(updatedPrice.toFixed(2)));
-  }, [cartItems]);
+  }, [cartItems])
 
   // Effect: Extract and group text & swatch attributes from cart items.
   useEffect(() => {
@@ -90,8 +90,7 @@ const CartOverlay: React.FC = () => {
       <div className={`cart-backdrop ${isOpen ? "show" : "hide"}`}></div>
 
       {/* Main cart overlay container */}
-      <div className={`cart-container ${isOpen ? "show" : "hide"} ${enableScroll ? "apply-scroll" : ""} z-3`}
-        data-testid='cart-overlay'>
+      <div className={`cart-container ${isOpen ? "show" : "hide"} ${enableScroll ? "apply-scroll" : ""} z-3`} data-testid="cart-overlay">
 
         {showLoading ?
           <OrderCompleted loading={loading} /> :
@@ -100,7 +99,7 @@ const CartOverlay: React.FC = () => {
             <div className="cart-header-container d-flex">
               <h4 className="cart-header">My bag, &nbsp;</h4>
               <p className="cart-total">
-                {cartItems.length} {cartItems.length !== 1 ? "items" : "item"}
+                {cartQuantity} {cartQuantity !== 1 ? "items" : "item"}
               </p>
             </div>
 
@@ -157,8 +156,8 @@ const CartOverlay: React.FC = () => {
                                       } ${idx < filteredValues.length - 1 ? "text-margin" : ""}`}
                                     data-testid={
                                       selectedValues.some((selectedItem) => selectedItem.value === item.value)
-                                        ? `cart-item-attribute-${kebabName}-${item.value}-selected`
-                                        : `cart-item-attribute-${kebabName}-${item.value}`
+                                        ? `cart-item-attribute-${kebabName}-${kebabName}-selected`
+                                        : `cart-item-attribute-${kebabName}-${kebabName}`
                                     }
                                   >
                                     <p className="text-attribute-value m-0">{item.value}</p>
@@ -185,6 +184,16 @@ const CartOverlay: React.FC = () => {
                             return acc;
                           }, [] as typeof values);
 
+                          const selectedValues = Object.keys(cartItem.swatch_selected).flatMap((key) =>
+                            filteredValues.filter(
+                              (item) =>
+                                item.name === key &&
+                                item.value === cartItem.swatch_selected[key]
+                            )
+                          );
+
+                        const kebabName = name.toLowerCase().replace(/\s+/g, "-");
+
                         return (
                           filteredValues.length > 0 && (
                             <div key={name}>
@@ -197,6 +206,11 @@ const CartOverlay: React.FC = () => {
                                       ? "swatch-selected"
                                       : ""
                                       } ${idx < filteredValues.length - 1 ? "swatch-margin" : ""}`}
+                                      data-testid={
+                                        selectedValues.some((selectedItem) => selectedItem.value === item.value)
+                                          ? `cart-item-attribute-${kebabName}-${kebabName}-selected`
+                                          : `cart-item-attribute-${kebabName}-${kebabName}`
+                                      }
                                   >
                                     <div
                                       className={`swatch-item ${item.value === "#FFFFFF" ? "swatch-border-item" : ""}`}
@@ -238,9 +252,9 @@ const CartOverlay: React.FC = () => {
                       })
                     }
                     data-testid="cart-item-amount-increase"
+                    aria-label="ADD"
                   >
                     <FaPlus />
-                    <span className="visually-hidden">ADD</span>
                   </div>
                   <span className="quantity" data-testid="cart-item-amount">
                     {cartItem.quantity}
@@ -259,9 +273,10 @@ const CartOverlay: React.FC = () => {
                     }
 
                     data-testid="cart-item-amount-decrease"
+                    aria-label="REMOVE"
                   >
                     <FaMinus />
-                    <span className="visually-hidden">ADD</span>
+                    <span className="visually-hidden">REMOVE</span>
                   </div>
                 </div>
 

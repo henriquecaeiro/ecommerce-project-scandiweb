@@ -321,6 +321,7 @@ const ProductDetail: React.FC = () => {
                                             }
                                         }}
                                         disabled={product?.in_stock === 0 || !isAttibutesSelected}
+                                        aria-label="ADD"
                                     >
                                         ADD TO CART
                                     </button>

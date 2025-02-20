@@ -15,49 +15,51 @@ import { Category } from "../../interfaces/Category";
 /**
  * Header Component
  *
- * Displays navigation categories fetched from the server,
- * a logo, and a shopping cart icon with the current cart quantity.
- * Also manages an animated underline that tracks the active navigation link.
+ * Displays navigation categories fetched via GraphQL, along with the logo
+ * and shopping cart icon (with cart quantity). It also manages an animated underline
+ * that highlights the active navigation link. The component adjusts for responsive
+ * layouts using event listeners.
  */
 const Header: React.FC = () => {
-  // Retrieve active category and its setter from CategoryContext.
+  // Retrieve active category state and updater from CategoryContext.
   const { activeItem, setActiveItem } = useCategory();
   // Retrieve cart state from CartContext.
-  const { isOpen, setIsOpen, cartItems } = useCart();
-  // Retrieve error setter from ErrorContext.
+  const { isOpen, setIsOpen, cartItems, cartQuantity, setCartQuantity } = useCart();
+  // Retrieve error updater from ErrorContext.
   const { setError } = useError();
 
-  // Fetch categories from GraphQL.
+  // Query to fetch categories from the GraphQL API.
   const { loading, error, data } = useQuery<{ categories: Category[] }>(GET_CATEGORIES);
 
-  // State to store the style (left, width, top) for the underline.
+  // State for storing the computed underline style (position and dimensions).
   const [underlineStyle, setUnderlineStyle] = useState<{ left: string; width: string; top: string }>({
     left: "0px",
     width: "0px",
-    top: "0px", // This will be updated after the active item renders.
+    top: "0px",
   });
 
-  // Create a ref to hold the DOM element of the active navigation link.
+  // Create a ref to hold the active navigation link DOM element.
   const activeItemRef = useRef<HTMLAnchorElement | null>(null);
 
-  // Local state for controlling the mobile menu open/closed.
+  // Local state to control whether the mobile menu is open.
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  // Local state for the total quantity of items in the cart.
-  const [cartQuantity, setCartQuantity] = useState<number>(0);
 
-  // Use a custom hook to ensure the loading indicator is shown for at least 2.5 seconds.
+  // Custom hook to enforce a minimum loading time (2.5 seconds) for a smoother UX.
   const showLoading = useDelayedLoading(loading, 2500);
 
   /**
    * updateUnderlinePosition
-   * Calculates and sets the underline's position and dimensions based on the active navigation element.
-   * For mobile (window.innerWidth <= 992), the top position is adjusted using the element's offsetTop and offsetHeight.
-   * Otherwise, it defaults to "80px".
+   *
+   * Calculates and sets the position and dimensions of the underline element
+   * based on the active navigation link. On mobile (window.innerWidth <= 992),
+   * the top position is adjusted using the element's offsetTop and offsetHeight.
    */
   const updateUnderlinePosition = () => {
     if (activeItemRef.current) {
       const { offsetLeft, offsetWidth, offsetTop, offsetHeight } = activeItemRef.current;
+      // Default top position is "80px" for desktop
       let underlineTop = "80px";
+      // For mobile devices, adjust the top position dynamically
       if (window.innerWidth <= 992) {
         underlineTop = `${offsetTop + offsetHeight + 5}px`;
       }
@@ -69,16 +71,18 @@ const Header: React.FC = () => {
     }
   };
 
-  // Update underline style when loading is finished and the active element is available.
+  // When loading is complete and categories are available, initialize the underline position.
   useEffect(() => {
     if (!loading && data?.categories.length && activeItemRef.current) {
       const { offsetLeft, offsetWidth } = activeItemRef.current;
+      // Use default top value for initial rendering
       let underlineTop = "80px";
       setUnderlineStyle({ left: `${offsetLeft}px`, width: `${offsetWidth}px`, top: underlineTop });
     }
   }, [showLoading]);
 
-  // Set default active category (if none is set) and add a resize listener to update the underline position.
+  // Set the default active category to the first category when data loads.
+  // Also, add a resize event listener to update the underline position on window resize.
   useEffect(() => {
     if (data?.categories.length && !activeItem) {
       setActiveItem(data.categories[0].name);
@@ -92,14 +96,14 @@ const Header: React.FC = () => {
     };
   }, [data, activeItem, setActiveItem]);
 
-  // If there's an error fetching categories, update the error state.
+  // If there is an error during the category fetch, update the error state.
   useEffect(() => {
     if (error) {
       setError(true);
     }
   }, [error, setError]);
 
-  // Update cart quantity whenever the cartItems array changes.
+  // Update the cart quantity whenever the cartItems array changes.
   useEffect(() => {
     const totalQuantity = cartItems.reduce((acc, product) => acc + product.quantity, 0);
     setCartQuantity(totalQuantity);
@@ -110,12 +114,12 @@ const Header: React.FC = () => {
     updateUnderlinePosition();
   }, [isMenuOpen]);
 
-  // Update underline position when the active category changes.
+  // Recalculate underline position after the active category changes.
   useLayoutEffect(() => {
     updateUnderlinePosition();
   }, [activeItem]);
 
-  // If the loading delay is still active, render the LoadingScreen.
+  // If still loading, render the LoadingScreen component.
   if (showLoading) {
     return <LoadingScreen />;
   }
@@ -154,7 +158,7 @@ const Header: React.FC = () => {
                 {category.name}
               </Link>
             ))}
-            {/* Underline element that tracks the active navigation link */}
+            {/* Underline element that visually indicates the active navigation link */}
             {activeItem && (
               <span
                 className={`active-underline position-absolute ${isMenuOpen ? "show" : "hide"}`}
@@ -165,14 +169,20 @@ const Header: React.FC = () => {
         </div>
 
         {/* Logo centered in the header */}
-        <Link to={`/${activeItem}`} className="navbar-brand mx-auto position-absolute start-50 translate-middle-x">
+        <Link to="/" className="navbar-brand mx-auto position-absolute start-50 translate-middle-x">
           <img src={logo} alt="logo" />
         </Link>
 
         {/* Shopping Cart Icon */}
         <div className="shopping-cart-container position-relative">
-          <img src={cart} alt="cart" className="shopping-cart" onClick={() => setIsOpen(!isOpen)} data-testid='cart-btn' />
-          {isOpen && (
+          <img
+            src={cart}
+            alt="cart"
+            className="shopping-cart"
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="cart-btn"
+          />
+          {(isOpen && cartQuantity > 0 ) && (
             <div className="quantity-button position-absolute bottom-50 start-50 d-flex justify-content-center align-items-start">
               <span className="quantity-text">{cartQuantity}</span>
             </div>
