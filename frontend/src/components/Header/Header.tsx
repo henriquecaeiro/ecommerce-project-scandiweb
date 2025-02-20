@@ -182,7 +182,7 @@ const Header: React.FC = () => {
             onClick={() => setIsOpen(!isOpen)}
             data-testid="cart-btn"
           />
-          {isOpen && (
+          {(isOpen && cartQuantity > 0 ) && (
             <div className="quantity-button position-absolute bottom-50 start-50 d-flex justify-content-center align-items-start">
               <span className="quantity-text">{cartQuantity}</span>
             </div>
